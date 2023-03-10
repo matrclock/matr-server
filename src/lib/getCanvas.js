@@ -8,5 +8,12 @@ export default function getCanvas() {
   const width = 64;
   const height = 32;
 
-  return createCanvas(width, height);
+  const canvas = createCanvas(width, height);
+  const ctx = canvas.getContext(`2d`);
+
+  ctx.fillStyle = `#000`;
+  ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = `#fff`;
+
+  return canvas;
 }
