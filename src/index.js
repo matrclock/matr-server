@@ -7,6 +7,6 @@ const port = 8000;
 
 App.use(parser())
   .use(router.routes())
-  .listen(port, () => {
-    console.log(`Listening on http://127.0.0.1:${port}/`);
+  .listen(port, `0.0.0.0`, () => {
+    console.log(`Listening on port ${port}`);
   });
