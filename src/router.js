@@ -4,9 +4,12 @@ import clock from "./elements/clock/index.js";
 const router = new Router();
 
 router.get(`/`, (ctx) => {
+  /*
   ctx.body = new Date().toLocaleTimeString(`en-us`, {
     hour12: false,
   });
+  */
+  ctx.type = `image/gif`;
   ctx.body = clock();
   return ctx;
 });
