@@ -3,13 +3,13 @@ import getGifEncoder from "../../lib/getGifEncoder.js";
 import getFont from "../../lib/getFont.js";
 
 export default function clock() {
-  const seconds = 30;
+  const seconds = 60;
   const canvas = getCanvas();
   const ctx = canvas.getContext(`2d`);
 
   const encoder = getGifEncoder();
   encoder.setDelay(1000);
-  const font = getFont(`7x14`);
+  const font = getFont(`7x13B`);
 
   const time = new Date();
 
@@ -23,7 +23,7 @@ export default function clock() {
   */
   encoder.start();
   for (let i = 0; i < seconds; i += 1) {
-    ctx.fillStyle = `#000000`;
+    ctx.fillStyle = `#000`;
     ctx.fillRect(0, 0, 64, 32);
 
     ctx.fillStyle = `#fff`;
