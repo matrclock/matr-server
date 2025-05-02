@@ -72,7 +72,7 @@ export async function convertAllBdfFonts() {
 
         try {
             await access(outputPath);
-            console.log(`✅ Skipping ${fontName} (already exists)`);
+            //console.log(`✅ Skipping ${fontName} (already exists)`);
             continue;
         } catch {
             // File doesn't exist — continue
