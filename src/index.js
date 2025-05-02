@@ -1,3 +1,4 @@
+import { dadJoke } from './sources/dadjoke.js';
 import { convertAllBdfFonts } from './convertFonts.js';
 import {
     renderTextGif,
@@ -11,14 +12,15 @@ await convertAllBdfFonts(); // Uses 'bdf' and 'glyphs' directories by default
 // Or:
 // await convertAllBdfFonts('my-bdf-folder', 'output-folder');
 
+const line1 = await dadJoke();
 
 const frames = await renderMultilineHorizontalScrollGif({
     delay: 100,
     lines: [
-      { text: 'Line One', fontName: '4x6', y: 2, pixelsPerFrame: 2 },
-      { text: 'Second Line Here', fontName: '4x6', y: 9, pixelsPerFrame: 4 },
-      { text: 'This is line three', fontName: '5x7', y: 16, pixelsPerFrame: 3 },
-      { text: 'It fits four of 4x6', fontName: '4x6', y: 24, pixelsPerFrame: 5 }
+      { text: line1, fontName: '4x6', y: 2, pixelsPerFrame: 2 },
+      { text: 'the default gif', fontName: '4x6', y: 9, pixelsPerFrame: 4 },
+      { text: 'from the blog server', fontName: '5x7', y: 16, pixelsPerFrame: 3 },
+      { text: 'Something useful would be cool', fontName: '4x6', y: 24, pixelsPerFrame: 5 }
     ]
   })
 

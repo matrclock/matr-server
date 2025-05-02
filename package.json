@@ -12,6 +12,7 @@
   "dependencies": {
     "bdfparser": "^2.2.5",
     "gifwrap": "^0.10.1",
+    "node-fetch": "^3.3.2",
     "pureimage": "^0.4.18"
   }
 }
