@@ -57,7 +57,7 @@ export async function renderTextGif(input) {
   }
 
   const bmp = new BitmapImage({ width: 64, height: 32, data: Buffer.from(img.data) });
-  return new GifFrame(bmp);
+  return new GifFrame(bmp, { delayCentisecs: 1000 });
 }
 
 export async function renderScrollingTextGif({
