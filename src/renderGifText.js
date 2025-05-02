@@ -5,6 +5,8 @@ import { GifCodec, GifFrame, BitmapImage } from 'gifwrap';
 import pureimage from 'pureimage';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const BACKGROUND_COLOR = 'black';
+const FOREGROUND_COLOR = 'darkgrey';
 
 async function loadFont(fontName) {
   const fontPath = path.join(__dirname, 'glyphs', `${fontName}.json`);
@@ -37,14 +39,23 @@ function drawText(ctx, font, text, x, y) {
     }
 }
 
-export async function renderTextGif({ text, fontName, x = 0, y = 0 }) {
-  const font = await loadFont(fontName);
+export async function renderTextGif(input) {
+  const items = Array.isArray(input) ? input : [input];
+  const fontCache = {};
+
   const img = pureimage.make(64, 32);
   const ctx = img.getContext('2d');
-  ctx.fillStyle = 'black';
+  ctx.fillStyle = BACKGROUND_COLOR;
   ctx.fillRect(0, 0, 64, 32);
-  ctx.fillStyle = 'grey';
-  drawText(ctx, font, text, x, y);
+
+  for (const { text, fontName, x = 0, y = 0 } of items) {
+    if (!fontCache[fontName]) {
+      fontCache[fontName] = await loadFont(fontName);
+    }
+    ctx.fillStyle = FOREGROUND_COLOR;
+    drawText(ctx, fontCache[fontName], text, x, y);
+  }
+
   const bmp = new BitmapImage({ width: 64, height: 32, data: Buffer.from(img.data) });
   return new GifFrame(bmp);
 }
@@ -73,9 +84,9 @@ export async function renderScrollingTextGif({
       const offset = i * pixelsPerFrame;
       const img = pureimage.make(64, 32);
       const ctx = img.getContext('2d');
-      ctx.fillStyle = 'black';
+      ctx.fillStyle = BACKGROUND_COLOR;
       ctx.fillRect(0, 0, 64, 32);
-      ctx.fillStyle = 'grey';
+      ctx.fillStyle = FOREGROUND_COLOR;
       drawText(ctx, font, text, 64 - offset, y);
       const bmp = new BitmapImage({ width: 64, height: 32, data: Buffer.from(img.data) });
       frames.push(new GifFrame(bmp, { delayCentisecs: Math.round(delay / 10) }));
@@ -173,9 +184,9 @@ export async function renderScrollingTextGif({
       const offset = i * pixelsPerFrame;
       const img = pureimage.make(64, 32);
       const ctx = img.getContext('2d');
-      ctx.fillStyle = 'black';
+      ctx.fillStyle = BACKGROUND_COLOR;
       ctx.fillRect(0, 0, 64, 32);
-      ctx.fillStyle = 'grey';
+      ctx.fillStyle = FOREGROUND_COLOR;
   
       lines.forEach((line, idx) => {
         const yPos = 32 - offset + idx * (glyphHeight + lineSpacing);
@@ -221,9 +232,9 @@ export async function renderScrollingTextGif({
     for (let i = 0; i < totalFrames; i++) {
       const img = pureimage.make(64, 32);
       const ctx = img.getContext('2d');
-      ctx.fillStyle = 'black';
+      ctx.fillStyle = BACKGROUND_COLOR;
       ctx.fillRect(0, 0, 64, 32);
-      ctx.fillStyle = 'grey';
+      ctx.fillStyle = FOREGROUND_COLOR;
   
       for (const line of lines) {
         const { text, fontName, y = 0, pixelsPerFrame = 1 } = line;
