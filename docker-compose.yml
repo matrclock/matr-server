@@ -3,7 +3,7 @@ version: '3.8'
 services:
   node-app:
     build: .
-    container_name: my-node-daemon
+    container_name: clock 
     volumes:
       - ./src/dist:/app/src/dist
     restart: unless-stopped
