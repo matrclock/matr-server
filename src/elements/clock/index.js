@@ -1,15 +1,18 @@
+import { loadImage } from "canvas";
+
 import getCanvas from "../../lib/getCanvas.js";
 import getGifEncoder from "../../lib/getGifEncoder.js";
 import getFont from "../../lib/getFont.js";
+import peaberry from './image_fonts/peaberry/index.js'
+import peaberryLoader from "./image_fonts/peaberry/index.js";
+import dayjs from "dayjs";
 
-export default function clock() {
-  const seconds = 60;
+export default async function clock() {
   const canvas = getCanvas();
   const ctx = canvas.getContext(`2d`);
 
   const encoder = getGifEncoder();
-  encoder.setDelay(1000);
-  const font = getFont(`7x13B`);
+  const font = getFont(`5x7`);
 
   const time = new Date();
 
@@ -22,16 +25,38 @@ export default function clock() {
     one way.
   */
   encoder.start();
-  for (let i = 0; i < seconds; i += 1) {
+
+  const peaberry = await peaberryLoader()
+
+  encoder.setDelay(60000);
+  const minutes = 10;
+
+  for (let i = 0; i < minutes; i += 1) {
     ctx.fillStyle = `#000`;
     ctx.fillRect(0, 0, 64, 32);
 
-    ctx.fillStyle = `#fff`;
-    const timeStr = time.toLocaleTimeString(`en-us`, {
-      hour12: false,
-    });
-    font.drawText(ctx, timeStr, 4, 18);
-    time.setSeconds(time.getSeconds() + 1);
+    ctx.fillStyle = `#FFF`;
+    const timeStr = dayjs(time).add(i, 'minute').format('HH:mm')
+    
+    function cText() {
+      font.drawText(ctx, timeStr, 4, 18);
+    }
+    
+    
+    function cImg() {
+      const pos = [3,0]
+      timeStr.split('').forEach(c => {
+        let glyph = peaberry[10]
+        if (c !== ':') glyph = peaberry[c]
+        ctx.drawImage(glyph, pos[0], 5, glyph.width, glyph.height);
+        pos[0] += glyph.width - 10;
+  
+      })
+    }
+    
+    cText()
+    
+
     encoder.addFrame(ctx);
   }
 

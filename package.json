@@ -21,6 +21,7 @@
   "dependencies": {
     "bdf-canvas": "^1.0.1",
     "canvas": "^2.11.0",
+    "dayjs": "^1.11.7",
     "gif-encoder-2": "^1.0.5",
     "koa": "^2.14.1",
     "koa-bodyparser": "^4.3.0",
