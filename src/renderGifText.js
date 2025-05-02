@@ -43,7 +43,7 @@ export async function renderTextGif({ text, fontName, x = 0, y = 0 }) {
   const ctx = img.getContext('2d');
   ctx.fillStyle = 'black';
   ctx.fillRect(0, 0, 64, 32);
-  ctx.fillStyle = 'white';
+  ctx.fillStyle = 'grey';
   drawText(ctx, font, text, x, y);
   const bmp = new BitmapImage({ width: 64, height: 32, data: Buffer.from(img.data) });
   return new GifFrame(bmp);
@@ -75,7 +75,7 @@ export async function renderScrollingTextGif({
       const ctx = img.getContext('2d');
       ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, 64, 32);
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = 'grey';
       drawText(ctx, font, text, 64 - offset, y);
       const bmp = new BitmapImage({ width: 64, height: 32, data: Buffer.from(img.data) });
       frames.push(new GifFrame(bmp, { delayCentisecs: Math.round(delay / 10) }));
@@ -175,7 +175,7 @@ export async function renderScrollingTextGif({
       const ctx = img.getContext('2d');
       ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, 64, 32);
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = 'grey';
   
       lines.forEach((line, idx) => {
         const yPos = 32 - offset + idx * (glyphHeight + lineSpacing);
@@ -223,7 +223,7 @@ export async function renderScrollingTextGif({
       const ctx = img.getContext('2d');
       ctx.fillStyle = 'black';
       ctx.fillRect(0, 0, 64, 32);
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = 'grey';
   
       for (const line of lines) {
         const { text, fontName, y = 0, pixelsPerFrame = 1 } = line;
