@@ -65,8 +65,8 @@ frames.push(await renderTextGif([
 frames.push.apply(frames, await renderVerticalScrollingTextGif({
   text: await catfact(),
   fontName: '6x9',
-  y: 12,
-  delay: 50,
+  lineSpacing: 2,
+  delay: 100,
   pixelsPerFrame: 2
 }));
 
