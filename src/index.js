@@ -59,7 +59,7 @@ frames.push(await renderTextGif([
     fontName: '6x13B',
     x: 5,
     y: 18
-  }], 10000));
+  }], 12000));
 
 /*
 frames.push.apply(frames, await renderScrollingTextGif({
@@ -89,7 +89,7 @@ frames.push(await renderTextGif([
     fontName: '6x13B',
     x: 2,
     y: 19
-  }], 10000));
+  }], 5000));
 
   
 await writeGifToFile(frames, 'clock.gif');
