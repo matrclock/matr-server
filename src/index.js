@@ -43,7 +43,7 @@ const frames = await renderTextGif([
     y: 10
   },
   {
-    text: `${time.hours}h ${time.minutes}m`,
+    text: `${time.hours+6}h ${time.minutes}m`,
     fontName: '6x13B',
     x: 5,
     y: 18
