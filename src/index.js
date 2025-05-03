@@ -32,15 +32,15 @@ const time = timeUntil('2025-05-03T14:25:00', 'America/Denver');
 
 const frames = [];
 
-frames.push.apply(frames, await renderScrollingTextGif({
+frames.push.apply(frames, await renderVerticalScrollingTextGif({
   text: await dadJoke(),
-  fontName: '9x15B',
+  fontName: '4x6',
   y: 11,
   delay: 100,
-  pixelsPerFrame: 5
+  pixelsPerFrame: 2
 }));
 
-frames.push(await renderVerticalScrollingTextGif([
+frames.push(await renderTextGif([
   {
     text: 'We need to',
     fontName: '4x6',
