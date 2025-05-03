@@ -1,7 +1,10 @@
 export const time = () => {
     const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
+    now.setHours(now.getHours() - 6);
+  
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+  
     return `${hours}:${minutes}`;
   }
   
