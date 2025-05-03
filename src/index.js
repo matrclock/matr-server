@@ -10,6 +10,7 @@ import {
 import { catfact } from './sources/catfact.js';
 import { timeUntil } from './sources/timeuntil.js';
 import { fococount } from './sources/fococount.js';
+import { time } from './sources/time.js';
 
 await convertAllBdfFonts(); // Uses 'bdf' and 'glyphs' directories by default
 // Or:
@@ -28,7 +29,7 @@ const frames = await renderMultilineHorizontalScrollGif({
   })
 */
 
-const time = timeUntil('2025-05-03T14:25:00', 'America/Denver');
+const timetil = timeUntil('2025-05-03T14:25:00', 'America/Denver');
 
 
 const frames = [];
@@ -41,7 +42,7 @@ frames.push.apply(frames, await renderVerticalScrollingTextGif({
   pixelsPerFrame: 2
 }));
 
-frames.push(await renderTextGif([
+/*frames.push(await renderTextGif([
   {
     text: 'We need to',
     fontName: '4x6',
@@ -55,11 +56,26 @@ frames.push(await renderTextGif([
     y: 10
   },
   {
-    text: `${time.hours+12}h ${time.minutes}m`,
+    text: `${timetil.hours+12}h ${timetil.minutes}m`,
     fontName: '6x13B',
     x: 5,
     y: 18
   }], 12000));
+  */
+
+  frames.push(await renderTextGif([
+    {
+      text: 'The time is',
+      fontName: '4x6',
+      x: 5,
+      y: 7
+    },
+    {
+      text: time(),
+      fontName: '9x15B',
+      x: 5,
+      y: 16
+    }], 12000));
 
 
 frames.push.apply(frames, await renderVerticalScrollingTextGif({
