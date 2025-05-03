@@ -9,6 +9,7 @@ import {
 } from './renderGifText.js';
 import { catfact } from './sources/catfact.js';
 import { timeUntil } from './sources/timeuntil.js';
+import { fococount } from './sources/fococount.js';
 
 await convertAllBdfFonts(); // Uses 'bdf' and 'glyphs' directories by default
 // Or:
@@ -60,6 +61,7 @@ frames.push(await renderTextGif([
     y: 18
   }], 10000));
 
+/*
 frames.push.apply(frames, await renderScrollingTextGif({
   text: await catfact(),
   fontName: '6x13B',
@@ -67,7 +69,27 @@ frames.push.apply(frames, await renderScrollingTextGif({
   delay: 100,
   pixelsPerFrame: 5
 }));
+*/
 
+frames.push(await renderTextGif([
+  {
+    text: 'Fort Collins',
+    fontName: '4x6',
+    x: 2,
+    y: 4
+  },
+  {
+    text: 'bike count',
+    fontName: '5x7',
+    x: 2,
+    y: 10
+  },
+  {
+    text: String(await fococount()),
+    fontName: '6x13B',
+    x: 2,
+    y: 19
+  }], 10000));
 
   
 await writeGifToFile(frames, 'clock.gif');
