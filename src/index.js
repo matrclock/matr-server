@@ -32,6 +32,14 @@ const time = timeUntil('2025-05-03T14:25:00', 'America/Denver');
 
 const frames = [];
 
+frames.push.apply(frames, await renderScrollingTextGif({
+  text: await dadJoke(),
+  fontName: '9x15B',
+  y: 11,
+  delay: 100,
+  pixelsPerFrame: 5
+}));
+
 frames.push(await renderTextGif([
   {
     text: 'We need to',
@@ -52,21 +60,13 @@ frames.push(await renderTextGif([
     y: 18
   }], 10000));
 
-  frames.push.apply(frames, await renderScrollingTextGif({
-    text: await dadJoke(),
-    fontName: '9x15B',
-    y: 11,
-    delay: 100,
-    pixelsPerFrame: 5
-  }));
-
-  frames.push.apply(frames, await renderScrollingTextGif({
-    text: await catfact(),
-    fontName: '6x13B',
-    y: 12,
-    delay: 100,
-    pixelsPerFrame: 5
-  }));
+frames.push.apply(frames, await renderScrollingTextGif({
+  text: await catfact(),
+  fontName: '6x13B',
+  y: 12,
+  delay: 100,
+  pixelsPerFrame: 5
+}));
 
 
   
