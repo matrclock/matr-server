@@ -40,7 +40,7 @@ frames.push.apply(frames, await renderScrollingTextGif({
   pixelsPerFrame: 5
 }));
 
-frames.push(await renderTextGif([
+frames.push(await renderVerticalScrollingTextGif([
   {
     text: 'We need to',
     fontName: '4x6',
