@@ -61,16 +61,17 @@ frames.push(await renderTextGif([
     y: 18
   }], 12000));
 
-/*
-frames.push.apply(frames, await renderScrollingTextGif({
-  text: await catfact(),
-  fontName: '6x13B',
-  y: 12,
-  delay: 100,
-  pixelsPerFrame: 5
-}));
-*/
 
+frames.push.apply(frames, await renderVerticalScrollingTextGif({
+  text: await catfact(),
+  fontName: '6x9',
+  y: 12,
+  delay: 50,
+  pixelsPerFrame: 2
+}));
+
+
+/*
 frames.push(await renderTextGif([
   {
     text: 'Fort Collins',
@@ -90,6 +91,7 @@ frames.push(await renderTextGif([
     x: 2,
     y: 19
   }], 5000));
+*/
 
   
 await writeGifToFile(frames, 'clock.gif');
