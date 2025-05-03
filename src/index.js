@@ -34,7 +34,7 @@ const frames = [];
 
 frames.push.apply(frames, await renderVerticalScrollingTextGif({
   text: await dadJoke(),
-  fontName: '4x6',
+  fontName: '5x7',
   y: 11,
   delay: 100,
   pixelsPerFrame: 2
