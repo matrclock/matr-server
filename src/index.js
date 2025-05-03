@@ -29,7 +29,10 @@ const frames = await renderMultilineHorizontalScrollGif({
 
 const time = timeUntil('2025-05-03T14:25:00', 'America/Denver');
 
-const frames = await renderTextGif([
+
+const frames = [];
+
+frames.push(await renderTextGif([
   {
     text: 'We need to',
     fontName: '4x6',
@@ -47,6 +50,24 @@ const frames = await renderTextGif([
     fontName: '6x13B',
     x: 5,
     y: 18
-  }]);
+  }], 10000));
+
+  frames.push.apply(frames, await renderScrollingTextGif({
+    text: await dadJoke(),
+    fontName: '9x15B',
+    y: 11,
+    delay: 100,
+    pixelsPerFrame: 5
+  }));
+
+  frames.push.apply(frames, await renderScrollingTextGif({
+    text: await catfact(),
+    fontName: '6x13B',
+    y: 12,
+    delay: 100,
+    pixelsPerFrame: 5
+  }));
+
+
   
 await writeGifToFile(frames, 'clock.gif');

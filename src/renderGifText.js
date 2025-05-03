@@ -39,7 +39,7 @@ function drawText(ctx, font, text, x, y) {
     }
 }
 
-export async function renderTextGif(input) {
+export async function renderTextGif(input, delay = 1000) {
   const items = Array.isArray(input) ? input : [input];
   const fontCache = {};
 
@@ -57,7 +57,7 @@ export async function renderTextGif(input) {
   }
 
   const bmp = new BitmapImage({ width: 64, height: 32, data: Buffer.from(img.data) });
-  return new GifFrame(bmp, { delayCentisecs: 1000 });
+  return new GifFrame(bmp, { delayCentisecs: delay / 10 });
 }
 
 export async function renderScrollingTextGif({
