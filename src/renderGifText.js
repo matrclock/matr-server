@@ -276,7 +276,6 @@ export async function gifToBin(inputFilename, outputFilename) {
   const colorMap = new Map();
   const frameBuffers = [];
 
-  console.log(`TO BIN - Width: ${width}, Height: ${height}, Frame Count: ${frameCount}`);
 
   let j = 0
   for (const frame of gif.frames) {
@@ -342,7 +341,6 @@ export async function binToGif(inputFilename, outputFilename) {
   const height = inputBuffer.readUInt8(1); // Read height from header
   const frameCount = inputBuffer.readUInt16LE(2); // Read frame count from header
 
-  console.log(`TO GIF - Width: ${width}, Height: ${height}, Frame Count: ${frameCount}`);
 
   // Extract the color palette (256 colors max)
   const palette = [];
@@ -382,7 +380,6 @@ export async function binToGif(inputFilename, outputFilename) {
     // Create a BitmapImage from the pixel data (as a Buffer)
     const bmp = new BitmapImage({ width: width, height: height, data: Buffer.from(pixels) });
 
-    console.log(`Frame ${i + 1}: Duration: ${duration}ms, Width: ${width}, Height: ${height}`);
     // Create a GifFrame for each frame using BitmapImage
     const frame = new GifFrame(bmp, {
       delayCentisecs: Math.round(duration / 10), // Convert ms to centiseconds
@@ -396,7 +393,6 @@ export async function binToGif(inputFilename, outputFilename) {
     throw new Error('Frames data is not in the expected array format');
   }
 
-  console.log(Array.isArray(frames) ? 'Frames data is an array' : 'Frames data is not an array');
 
   // Use GifCodec to encode the GIF and write it to a file
   const codec = new GifCodec();

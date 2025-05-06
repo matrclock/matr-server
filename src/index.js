@@ -63,6 +63,6 @@ frames.push(await renderTextGif([
   
 await writeGifToFile(frames, 'clock.gif');
 await gifToBin('clock.gif', 'clock.bin');
-await binToGif('clock.bin', 'clockbin.gif');
+//await binToGif('clock.bin', 'clockbin.gif');
 
 
