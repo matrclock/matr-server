@@ -76,7 +76,7 @@ frames.push(await renderTextGif([
     y: 1
   },
   {
-    content: 'yesterday',
+    content: 'yesterday...',
     fontName: 'Tiny5-Regular',
     x: 2,
     y: 7
