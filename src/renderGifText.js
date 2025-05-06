@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { GifCodec, GifFrame, BitmapImage } from 'gifwrap';
+import { GifCodec, GifFrame, BitmapImage, GifUtil } from 'gifwrap';
 import pureimage from 'pureimage';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -259,5 +259,156 @@ export async function writeGifToFile(frames, filename) {
   await fs.promises.mkdir(outDir, { recursive: true });
   const outPath = path.join(outDir, filename);
   await fs.promises.writeFile(outPath, buffer);
+  console.log(`✅ Saved ${outPath}`);
+}
+
+export async function gifToBin(inputFilename, outputFilename) {
+  const codec = new GifCodec();
+  const inputPath = path.join(__dirname, 'dist', inputFilename);
+  const gif = await GifUtil.read(inputPath);
+
+  const width = gif.frames[0].bitmap.width;
+  const height = gif.frames[0].bitmap.height;
+  const frameCount = gif.frames.length;
+
+  const palette = [];
+  const colorMap = new Map();
+  const frameBuffers = [];
+
+  console.log(`TO BIN - Width: ${width}, Height: ${height}, Frame Count: ${frameCount}`);
+
+  let j = 0
+  for (const frame of gif.frames) {
+    const bmp = frame.bitmap;
+    const pixels = bmp.data;
+    const indices = Buffer.alloc(width * height);
+
+    for (let i = 0, j = 0; i < pixels.length; i += 4, j++) {
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+      const key = (r << 16) | (g << 8) | b;
+      let index;
+      if (colorMap.has(key)) {
+        index = colorMap.get(key);
+      } else {
+        if (palette.length >= 256) {
+          throw new Error('Too many colors (over 256) in GIF');
+        }
+        index = palette.length;
+        palette.push([r, g, b]);
+        colorMap.set(key, index);
+      }
+      indices[j] = index;
+    }
+    
+    frameBuffers.push({
+      duration: frame.delayCentisecs * 10, // to ms
+      data: indices,
+    });
+  }
+
+  const header = Buffer.alloc(4 + 256 * 3);
+  header[0] = width;
+  header[1] = height;
+  header.writeUInt16LE(frameCount, 2);
+
+  for (let i = 0; i < 256; i++) {
+    const [r, g, b] = palette[i] || [0, 0, 0];
+    header[4 + i * 3 + 0] = r;
+    header[4 + i * 3 + 1] = g;
+    header[4 + i * 3 + 2] = b;
+  }
+
+  const frameData = frameBuffers.map(({ duration, data }) => {
+    const buf = Buffer.alloc(2 + data.length);
+    buf.writeUInt16LE(duration, 0);
+    data.copy(buf, 2);
+    return buf;
+  });
+
+  const output = Buffer.concat([header, ...frameData]);
+  const outPath = path.join(__dirname, 'dist', outputFilename);
+  await fs.promises.writeFile(outPath, output);
+  console.log(`✅ Saved ${outPath}`);
+}
+
+export async function binToGif(inputFilename, outputFilename) {
+  const inputPath = path.join(__dirname, 'dist', inputFilename);
+  const inputBuffer = await fs.promises.readFile(inputPath);  // Renaming the input file buffer
+
+  const width = inputBuffer.readUInt8(0); // Read width from header
+  const height = inputBuffer.readUInt8(1); // Read height from header
+  const frameCount = inputBuffer.readUInt16LE(2); // Read frame count from header
+
+  console.log(`TO GIF - Width: ${width}, Height: ${height}, Frame Count: ${frameCount}`);
+
+  // Extract the color palette (256 colors max)
+  const palette = [];
+  let offset = 4;
+  for (let i = 0; i < 256; i++) {
+    const r = inputBuffer.readUInt8(offset + i * 3 + 0);
+    const g = inputBuffer.readUInt8(offset + i * 3 + 1);
+    const b = inputBuffer.readUInt8(offset + i * 3 + 2);
+    palette.push([r, g, b]);
+  }
+  offset += 256 * 3; // Move past the palette
+
+  // Read the frames and reconstruct the bitmap data
+  const frames = [];
+
+  for (let i = 0; i < frameCount; i++) {
+    const duration = inputBuffer.readUInt16LE(offset); // Frame duration in ms
+    offset += 2;
+
+    const indices = [];
+    for (let j = 0; j < width * height; j++) {
+      indices.push(inputBuffer.readUInt8(offset + j));
+    }
+    offset += width * height;
+
+    // Convert indices back to pixels using the palette
+    const pixels = new Uint8Array(width * height * 4); // RGBA
+    for (let j = 0; j < width * height; j++) {
+      const index = indices[j];
+      const [r, g, b] = palette[index];
+      pixels[j * 4 + 0] = r;
+      pixels[j * 4 + 1] = g;
+      pixels[j * 4 + 2] = b;
+      pixels[j * 4 + 3] = 255; // Full opacity (no transparency)
+    }
+
+    // Create a BitmapImage from the pixel data (as a Buffer)
+    const bmp = new BitmapImage({ width: width, height: height, data: Buffer.from(pixels) });
+
+    console.log(`Frame ${i + 1}: Duration: ${duration}ms, Width: ${width}, Height: ${height}`);
+    // Create a GifFrame for each frame using BitmapImage
+    const frame = new GifFrame(bmp, {
+      delayCentisecs: Math.round(duration / 10), // Convert ms to centiseconds
+    });
+
+    frames.push(frame);
+  }
+
+  // Ensure frames is an array
+  if (!Array.isArray(frames)) {
+    throw new Error('Frames data is not in the expected array format');
+  }
+
+  console.log(Array.isArray(frames) ? 'Frames data is an array' : 'Frames data is not an array');
+
+  // Use GifCodec to encode the GIF and write it to a file
+  const codec = new GifCodec();
+  const frameArray = Array.isArray(frames) ? frames : [frames];
+  const { buffer: gifBuffer } = await codec.encodeGif(frameArray, { loops: 0 });
+
+  // Ensure the output directory exists
+  const outDir = path.join(__dirname, 'dist');
+  await fs.promises.mkdir(outDir, { recursive: true });
+
+  // Write the GIF buffer to the file
+  const outPath = path.join(outDir, outputFilename);
+  await fs.promises.writeFile(outPath, gifBuffer);
+
   console.log(`✅ Saved ${outPath}`);
 }

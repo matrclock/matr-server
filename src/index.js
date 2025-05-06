@@ -1,18 +1,21 @@
 import { dadJoke } from './sources/dadjoke.js';
-import { convertAllBdfFonts } from './convertFonts.js';
 import {
     renderTextGif,
     renderScrollingTextGif,
     writeGifToFile,
     renderVerticalScrollingTextGif,
-    renderMultilineHorizontalScrollGif
+    renderMultilineHorizontalScrollGif,
+    gifToBin,
+    binToGif
 } from './renderGifText.js';
 import { catfact } from './sources/catfact.js';
 import { timeUntil } from './sources/timeuntil.js';
 import { fococount } from './sources/fococount.js';
 import { time } from './sources/time.js';
 
-await convertAllBdfFonts(); // Uses 'bdf' and 'glyphs' directories by default
+//import { convertAllBdfFonts } from './convertFonts.js';
+//await convertAllBdfFonts(); // Uses 'bdf' and 'glyphs' directories by default
+
 // Or:
 // await convertAllBdfFonts('my-bdf-folder', 'output-folder');
 
@@ -35,79 +38,31 @@ const timetil = timeUntil('2025-05-03T14:25:00', 'America/Denver');
 const frames = [];
 
 frames.push.apply(frames, await renderVerticalScrollingTextGif({
-  text: await dadJoke(),
-  fontName: '5x7',
-  y: 11,
-  delay: 100,
-  pixelsPerFrame: 2
-}));
-
-/*frames.push(await renderTextGif([
-  {
-    text: 'We need to',
-    fontName: '4x6',
-    x: 5,
-    y: 4
-  },
-  {
-    text: 'leave in',
-    fontName: '4x6',
-    x: 5,
-    y: 10
-  },
-  {
-    text: `${timetil.hours+12}h ${timetil.minutes}m`,
-    fontName: '6x13B',
-    x: 5,
-    y: 18
-  }], 12000));
-  */
-
-  frames.push(await renderTextGif([
-    {
-      text: 'The time is',
-      fontName: '4x6',
-      x: 5,
-      y: 7
-    },
-    {
-      text: time(),
-      fontName: '9x15B',
-      x: 5,
-      y: 16
-    }], 12000));
-
-
-frames.push.apply(frames, await renderVerticalScrollingTextGif({
   text: await catfact(),
   fontName: '6x9',
   lineSpacing: 2,
-  delay: 100,
-  pixelsPerFrame: 2
+  delay: 50,
+  pixelsPerFrame: 1
 }));
-
 
 /*
 frames.push(await renderTextGif([
   {
-    text: 'Fort Collins',
+    text: 'The time is',
     fontName: '4x6',
-    x: 2,
-    y: 4
+    x: 5,
+    y: 7
   },
   {
-    text: 'bike count',
-    fontName: '5x7',
-    x: 2,
-    y: 10
-  },
-  {
-    text: String(await fococount()),
-    fontName: '6x13B',
-    x: 2,
-    y: 19
+    text: time(),
+    fontName: '9x15B',
+    x: 5,
+    y: 16
   }], 5000));
-*/
-
+  */
   
 await writeGifToFile(frames, 'clock.gif');
+await gifToBin('clock.gif', 'clock.bin');
+await binToGif('clock.bin', 'clockbin.gif');
+
+
