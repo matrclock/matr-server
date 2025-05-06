@@ -46,21 +46,21 @@ frames.push.apply(frames, await renderVerticalScrollingTextGif({
   foregroundColor: '#333',
 }));
 
-/*
+
 frames.push(await renderTextGif([
   {
-    text: 'The time is',
+    content: 'The time is',
     fontName: '4x6',
     x: 5,
     y: 7
   },
   {
-    text: time(),
+    content: time(),
     fontName: '9x15B',
     x: 5,
     y: 16
   }], 5000));
-  */
+  
   
 await writeGifToFile(frames, 'clock.gif');
 await gifToBin('clock.gif', 'clock.bin');
