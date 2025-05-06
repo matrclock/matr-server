@@ -55,14 +55,15 @@ frames.push(await renderTextGif([
   {
     content: 'The time is',
     fontName: 'Tiny5-Regular',
-    x: 5,
-    y: 3
+    x: 2,
+    y: 1
   },
   {
     content: time(),
     fontName: '9x18B',
-    x: 5,
-    y: 9
+    x: 2,
+    y: 7,
+    color: '#4A9AD8'
   }], 10000));
 
 const bikes = await fococount(dayjs().subtract(1, 'day').format('YYYYMMDD'), 4);
@@ -84,7 +85,8 @@ frames.push(await renderTextGif([
     content: String(bikes),
     fontName: '9x18B',
     x: 2,
-    y: 13
+    y: 13,
+    color: '#D88C4A'
   }], 5000));
 
 
