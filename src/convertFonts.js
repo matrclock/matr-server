@@ -12,6 +12,11 @@ async function parseBdf(filePath) {
     let glyph = null;
     let inBitmap = false;
 
+    let pointSize = 0;
+    let pixelSize = 0;
+    let fontAscent = 0;
+    let fontDescent = 0;
+
     const rl = readline.createInterface({
         input: fs.createReadStream(filePath),
         crlfDelay: Infinity
@@ -20,7 +25,15 @@ async function parseBdf(filePath) {
     for await (const line of rl) {
         const parts = line.trim().split(/\s+/);
 
-        if (line.startsWith('STARTCHAR')) {
+        if (line.startsWith('POINT_SIZE')) {
+            pointSize = parseInt(parts[1]); // Assume it's in pixels
+        } else if (line.startsWith('PIXEL_SIZE')) {
+            pixelSize = parseInt(parts[1]);
+        } else if (line.startsWith('FONT_ASCENT')) {
+            fontAscent = parseInt(parts[1]);
+        } else if (line.startsWith('FONT_DESCENT')) {
+            fontDescent = parseInt(parts[1]);
+        } else if (line.startsWith('STARTCHAR')) {
             glyph = {};
             inBitmap = false;
         } else if (line.startsWith('ENCODING')) {
@@ -32,29 +45,51 @@ async function parseBdf(filePath) {
             glyph.yOffset = parseInt(parts[4]);
         } else if (line.startsWith('BITMAP')) {
             inBitmap = true;
-            glyph.bitmap = [];
+            glyph._bitmapLines = [];
         } else if (line.startsWith('ENDCHAR')) {
             if (glyph && glyph.encoding >= 0) {
+                const byteWidth = Math.ceil(glyph.width / 8);
+                const rawBitmap = glyph._bitmapLines.map(hex => {
+                    const bin = parseInt(hex, 16)
+                        .toString(2)
+                        .padStart(byteWidth * 8, '0');
+                    return bin.slice(0, glyph.width).split('').map(Number);
+                });
+
+                const targetHeight = pixelSize || pointSize || (fontAscent + fontDescent);
+                const baseline = fontAscent;
+
+                const actualTop = glyph.yOffset + glyph.height;
+                const topPad = Math.max(baseline - actualTop, 0);
+                const bottomPad = Math.max(targetHeight - (topPad + glyph.height), 0);
+
+                const bitmap = [];
+                for (let i = 0; i < topPad; i++) {
+                    bitmap.push(new Array(glyph.width).fill(0));
+                }
+                bitmap.push(...rawBitmap);
+                for (let i = 0; i < bottomPad; i++) {
+                    bitmap.push(new Array(glyph.width).fill(0));
+                }
+
+                glyph.bitmap = bitmap;
+                delete glyph._bitmapLines;
+
                 glyph.char = String.fromCharCode(glyph.encoding);
                 glyphs[glyph.char] = glyph;
             }
             glyph = null;
             inBitmap = false;
         } else if (inBitmap && glyph) {
-            const byteWidth = Math.ceil(glyph.width / 8);
-            const bin = parseInt(line.trim(), 16)
-                .toString(2)
-                .padStart(byteWidth * 8, '0');
-            const row = bin
-                .slice(0, glyph.width)
-                .split('')
-                .map(Number);
-            glyph.bitmap.push(row);
+            glyph._bitmapLines.push(line.trim());
         }
     }
 
     return glyphs;
 }
+
+
+
 
 
 export async function convertAllBdfFonts() {

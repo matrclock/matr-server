@@ -2,22 +2,18 @@ import { dadJoke } from './sources/dadjoke.js';
 import {
     renderTextGif,
     renderHorizontalScrollingTextGif,
-    writeGifToFile,
     renderVerticalScrollingTextGif,
     renderMultilineHorizontalScrollGif,
-    gifToBin,
-    binToGif
+    TextContent
 } from './renderGifText.js';
+import { binToGif, gifToBin, writeGifToFile } from './gifWriter.js';
 import { catfact } from './sources/catfact.js';
 import { timeUntil } from './sources/timeuntil.js';
 import { fococount } from './sources/fococount.js';
 import { time } from './sources/time.js';
 
-//import { convertAllBdfFonts } from './convertFonts.js';
-//await convertAllBdfFonts(); // Uses 'bdf' and 'glyphs' directories by default
-
-// Or:
-// await convertAllBdfFonts('my-bdf-folder', 'output-folder');
+import { convertAllBdfFonts } from './convertFonts.js';
+await convertAllBdfFonts(); // Uses 'bdf' and 'glyphs' directories by default
 
 /*
 const line1 = await dadJoke();
@@ -32,35 +28,64 @@ const frames = await renderMultilineHorizontalScrollGif({
   })
 */
 
-const timetil = timeUntil('2025-05-03T14:25:00', 'America/Denver');
-
-
 const frames = [];
 
-frames.push.apply(frames, await renderVerticalScrollingTextGif({
+
+const textItem = new TextContent({
   content: await catfact(),
-  fontName: '6x9',
-  lineSpacing: 1,
+  fontName: "Tiny5-Regular", // Replace with your actual font JSON name (without .json)
+  x: 0,
+  y: 0,
+  color: "#333",
+  lineSpacing: 0
+});
+
+
+
+frames.push.apply(frames, await renderVerticalScrollingTextGif(textItem, {
   delay: 70,
   pixelsPerFrame: 1,
-  foregroundColor: '#333',
 }));
 
 
+/*
 frames.push(await renderTextGif([
   {
     content: 'The time is',
-    fontName: '4x6',
+    fontName: 'Tiny5-Regular',
     x: 5,
     y: 7
   },
   {
     content: time(),
-    fontName: '9x15B',
+    fontName: '6x13B',
     x: 5,
     y: 16
-  }], 5000));
-  
+  }], 1000));
+*/
+
+/*
+frames.push(await renderTextGif([
+  {
+    content: 'byjipq',
+    fontName: 'Tiny5-Regular',
+    x: 1,
+    y: 2
+  },
+  {
+    content: 'bqrstuvwxyz',
+    fontName: 'Tiny5-Regular',
+    x: 1,
+    y: 12
+  },
+  {
+    content: 'ABCDEFGHIJKLM',
+    fontName: 'Tiny5-Regular',
+    x: 1,
+    y: 22
+  }
+], 1000));
+*/  
   
 await writeGifToFile(frames, 'clock.gif');
 await gifToBin('clock.gif', 'clock.bin');
