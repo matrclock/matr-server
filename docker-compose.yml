@@ -5,11 +5,12 @@ services:
     image: node:18
     container_name: clock-generator
     volumes:
-      - ./app:/app         # <- expose editable code
-      - ./dist:/app/dist   # <- dist is output directory
+      - ./:/app
     working_dir: /app
     command: sh -c "while true; do npm install && npm run generate; sleep 60; done"
     restart: unless-stopped
+    networks:
+      - cloudflare-net
 
   web:
     image: nginx:alpine
