@@ -63,7 +63,7 @@ frames.push(await renderTextGif([
     fontName: '9x18B',
     x: 5,
     y: 9
-  }], 5000));
+  }], 10000));
 
 const bikes = await fococount(dayjs().subtract(1, 'day').format('YYYYMMDD'), 4);
 
