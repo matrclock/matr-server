@@ -11,6 +11,7 @@ import { catfact } from './sources/catfact.js';
 import { timeUntil } from './sources/timeuntil.js';
 import { fococount } from './sources/fococount.js';
 import { time } from './sources/time.js';
+import dayjs from 'dayjs';
 
 import { convertAllBdfFonts } from './convertFonts.js';
 await convertAllBdfFonts(); // Uses 'bdf' and 'glyphs' directories by default
@@ -31,38 +32,61 @@ const frames = await renderMultilineHorizontalScrollGif({
 const frames = [];
 
 
+/*
 const textItem = new TextContent({
   content: await catfact(),
-  fontName: "Tiny5-Bold", // Replace with your actual font JSON name (without .json)
+  fontName: "Tiny5-Regular", // Replace with your actual font JSON name (without .json)
   x: 0,
   y: 0,
   color: "#333",
-  lineSpacing: 0
+  lineSpacing: -7
 });
-
 
 
 frames.push.apply(frames, await renderVerticalScrollingTextGif(textItem, {
   delay: 70,
   pixelsPerFrame: 1,
 }));
+*/
 
 
-/*
+
 frames.push(await renderTextGif([
   {
     content: 'The time is',
     fontName: 'Tiny5-Regular',
     x: 5,
-    y: 7
+    y: 3
   },
   {
     content: time(),
-    fontName: '6x13B',
+    fontName: '9x18B',
     x: 5,
-    y: 16
-  }], 1000));
-*/
+    y: 9
+  }], 5000));
+
+const bikes = await fococount(dayjs().subtract(1, 'day').format('YYYYMMDD'), 4);
+
+frames.push(await renderTextGif([
+  {
+    content: 'Remington bikes',
+    fontName: 'Tiny5-Regular',
+    x: 2,
+    y: 1
+  },
+  {
+    content: 'yesterday',
+    fontName: 'Tiny5-Regular',
+    x: 2,
+    y: 7
+  },
+  {
+    content: String(bikes),
+    fontName: '9x18B',
+    x: 2,
+    y: 13
+  }], 5000));
+
 
 /*
 frames.push(await renderTextGif([

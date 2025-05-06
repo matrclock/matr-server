@@ -51,10 +51,6 @@ async function drawText(ctx, textItem) {
     }
 
     const xOffset = glyph.xOffset || 0;
-    //const yOffset = (glyph.yOffset || 0);
-    const yOffset = 0;
-
-    console.log(`Drawing character: ${ch} at (${cursorX + xOffset}, ${y}), xOffset: ${xOffset}`);
 
     for (let row = 0; row < glyph.bitmap.length; row++) {
       for (let col = 0; col < glyph.bitmap[row].length; col++) {

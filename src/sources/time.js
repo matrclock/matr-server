@@ -7,6 +7,6 @@ dayjs.extend(timezone);
 
 export const time = () => {
     const now = dayjs.utc().tz("America/Denver");
-    return now.format('HH:mm:ss');
+    return now.format('HH:mm');
   }
   
