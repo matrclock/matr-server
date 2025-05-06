@@ -33,7 +33,7 @@ const frames = [];
 
 const textItem = new TextContent({
   content: await catfact(),
-  fontName: "Tiny5-Regular", // Replace with your actual font JSON name (without .json)
+  fontName: "Tiny5-Bold", // Replace with your actual font JSON name (without .json)
   x: 0,
   y: 0,
   color: "#333",
