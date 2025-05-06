@@ -4,12 +4,13 @@ import { fileURLToPath } from 'url';
 import { GifCodec, GifFrame, BitmapImage, GifUtil } from 'gifwrap';
 import pureimage from 'pureimage';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const srcDir = path.join(process.cwd(),'src');
+const distDir = path.join(process.cwd(), 'dist');
 const BACKGROUND_COLOR = 'black';
 const FOREGROUND_COLOR = 'darkgrey';
 
 async function loadFont(fontName) {
-  const fontPath = path.join(__dirname, 'glyphs', `${fontName}.json`);
+  const fontPath = path.join(srcDir, 'glyphs', `${fontName}.json`);
   const data = await fs.promises.readFile(fontPath, 'utf-8');
   return JSON.parse(data);
 }
@@ -255,7 +256,7 @@ export async function writeGifToFile(frames, filename) {
   const codec = new GifCodec();
   const frameArray = Array.isArray(frames) ? frames : [frames];
   const { buffer } = await codec.encodeGif(frameArray, { loops: 0 });
-  const outDir = path.join(__dirname, 'dist');
+  const outDir = distDir
   await fs.promises.mkdir(outDir, { recursive: true });
   const outPath = path.join(outDir, filename);
   await fs.promises.writeFile(outPath, buffer);
@@ -264,7 +265,7 @@ export async function writeGifToFile(frames, filename) {
 
 export async function gifToBin(inputFilename, outputFilename) {
   const codec = new GifCodec();
-  const inputPath = path.join(__dirname, 'dist', inputFilename);
+  const inputPath = path.join(distDir, inputFilename);
   const gif = await GifUtil.read(inputPath);
 
   const width = gif.frames[0].bitmap.width;
@@ -328,13 +329,13 @@ export async function gifToBin(inputFilename, outputFilename) {
   });
 
   const output = Buffer.concat([header, ...frameData]);
-  const outPath = path.join(__dirname, 'dist', outputFilename);
+  const outPath = path.join(distDir, outputFilename);
   await fs.promises.writeFile(outPath, output);
   console.log(`✅ Saved ${outPath}`);
 }
 
 export async function binToGif(inputFilename, outputFilename) {
-  const inputPath = path.join(__dirname, 'dist', inputFilename);
+  const inputPath = path.join(distDir, inputFilename);
   const inputBuffer = await fs.promises.readFile(inputPath);  // Renaming the input file buffer
 
   const width = inputBuffer.readUInt8(0); // Read width from header
@@ -403,7 +404,7 @@ export async function binToGif(inputFilename, outputFilename) {
   const { buffer: gifBuffer } = await codec.encodeGif(frameArray, { loops: 0 });
 
   // Ensure the output directory exists
-  const outDir = path.join(__dirname, 'dist');
+  const outDir = distDir
   await fs.promises.mkdir(outDir, { recursive: true });
 
   // Write the GIF buffer to the file
