@@ -1,7 +1,7 @@
 import { dadJoke } from './sources/dadjoke.js';
 import {
     renderTextGif,
-    renderScrollingTextGif,
+    renderHorizontalScrollingTextGif,
     writeGifToFile,
     renderVerticalScrollingTextGif,
     renderMultilineHorizontalScrollGif,
@@ -38,11 +38,12 @@ const timetil = timeUntil('2025-05-03T14:25:00', 'America/Denver');
 const frames = [];
 
 frames.push.apply(frames, await renderVerticalScrollingTextGif({
-  text: await catfact(),
+  content: await catfact(),
   fontName: '6x9',
-  lineSpacing: 2,
+  lineSpacing: 1,
   delay: 70,
-  pixelsPerFrame: 1
+  pixelsPerFrame: 1,
+  foregroundColor: '#333',
 }));
 
 /*
