@@ -1,0 +1,80 @@
+import { OpenAI } from "openai";
+import fetch from 'node-fetch';
+import { loadConfig } from "../loadConfig.js";
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc.js';
+import timezone from 'dayjs/plugin/timezone.js';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+const config = await loadConfig();
+const apiKey = config.sources.openai.key;
+
+const openai = new OpenAI({ apiKey });
+
+const hoursToSummarize = [9, 13]; // 9am and 1pm
+
+function getForecastDay() {
+  const now = dayjs().tz("America/Denver");
+  return now.hour() >= 14 ? 2 : 1;
+}
+
+function buildOpenMeteoUrl(forecastDays) {
+  return `https://api.open-meteo.com/v1/forecast?latitude=40.599556&longitude=-105.061683&hourly=temperature_2m,wind_speed_10m,wind_gusts_10m,wind_direction_10m,precipitation_probability&timezone=America%2FDenver&forecast_days=${forecastDays}&wind_speed_unit=mph&temperature_unit=fahrenheit&precipitation_unit=inch`;
+}
+
+async function fetchWeatherData() {
+  const forecastDay = getForecastDay();
+  const url = buildOpenMeteoUrl(forecastDay);
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Failed to fetch weather data: ${res.status}`);
+  return res.json();
+}
+
+function extractRelevantData(data, hours) {
+  const now = dayjs().tz("America/Denver");
+  const targetDate = now.add(getForecastDay() - 1, 'day').format("YYYY-MM-DD");
+
+  const result = [];
+  for (const hour of hours) {
+    const hourStr = `${targetDate}T${hour.toString().padStart(2, "0")}:00`;
+    const index = data.hourly.time.findIndex((t) => t === hourStr);
+    if (index !== -1) {
+      result.push({
+        time: data.hourly.time[index],
+        temperature: data.hourly.temperature_2m[index],
+        wind_speed: data.hourly.wind_speed_10m[index],
+        wind_gusts: data.hourly.wind_gusts_10m[index],
+        wind_direction: data.hourly.wind_direction_10m[index],
+        precipitation_probability: data.hourly.precipitation_probability[index],
+      });
+    }
+  }
+  return result;
+}
+
+async function summarizeWithChatGPT(weatherData) {
+  const systemPrompt = "You are a helpful assistant that summarizes weather data clearly in one short sentence.";
+  
+  const date = dayjs(weatherData[0].time).tz("America/Denver").format("dddd, MMMM D");
+  const userPrompt = `Summarize the weather at both 9am and 1pm on ${date} from this data:\n\n${JSON.stringify(weatherData, null, 2)}\n\nKeep it concise. Use the correct tense. For example, if you're telling me about tomorrow's weather use 'will be' and if you're telling me about today use 'is'.\n\nBe sure to include the temperature, wind speed, wind gusts, wind direction, and precipitation probability.`;
+
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ],
+    temperature: 0.5,
+  });
+
+  return response.choices[0].message.content.trim();
+}
+
+export async function weather() {
+  const fullWeather = await fetchWeatherData();
+  const relevant = extractRelevantData(fullWeather, hoursToSummarize);
+  const summary = await summarizeWithChatGPT(relevant);
+  return summary;
+}

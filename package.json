@@ -14,6 +14,7 @@
     "dayjs": "^1.11.13",
     "gifwrap": "^0.10.1",
     "node-fetch": "^3.3.2",
+    "openai": "^4.97.0",
     "pureimage": "^0.4.18"
   }
 }

@@ -14,6 +14,7 @@ import { time } from './sources/time.js';
 import dayjs from 'dayjs';
 
 import { convertAllBdfFonts } from './convertFonts.js';
+import { weather } from './sources/weather.js';
 await convertAllBdfFonts(); // Uses 'bdf' and 'glyphs' directories by default
 
 /*
@@ -32,9 +33,9 @@ const frames = await renderMultilineHorizontalScrollGif({
 const frames = [];
 
 
-/*
+
 const textItem = new TextContent({
-  content: await catfact(),
+  content: await weather(),
   fontName: "Tiny5-Regular", // Replace with your actual font JSON name (without .json)
   x: 0,
   y: 0,
@@ -47,7 +48,7 @@ frames.push.apply(frames, await renderVerticalScrollingTextGif(textItem, {
   delay: 70,
   pixelsPerFrame: 1,
 }));
-*/
+
 
 
 
