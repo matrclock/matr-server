@@ -12,6 +12,7 @@
   "dependencies": {
     "bdfparser": "^2.2.5",
     "dayjs": "^1.11.13",
+    "flat-cache": "^6.1.9",
     "gifwrap": "^0.10.1",
     "node-fetch": "^3.3.2",
     "openai": "^4.97.0",
