@@ -54,6 +54,7 @@ async function fetchWeatherData() {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch weather data: ${res.status}`);
   const data = await res.json();
+  console.log("Fetched weather data:", data);
 
   cache.setKey(cacheKey, data);
   return data;
@@ -86,9 +87,13 @@ async function summarizeWithGemini(weatherData) {
 
   const date = dayjs(weatherData[0].time).tz("America/Denver").format("dddd, MMMM D");
   const userPrompt = `Summarize the weather at both 9am and 1pm on ${date} from this data:\n\n${JSON.stringify(weatherData, null, 2)}\n\n
+                      State the day of the week first.
                       Keep the summary short or the listener will change the station. Include temperature, wind speed, gusts, direction, and precipitation probability.
-                      Avoid words like "is" use "will be" instead. Seriously, keep it short. No newlines or bullet points. Round the numbers.
-                      Translate wind direction from degrees to shorthand cardinal directions (e.g., 0° = N, 90° = E, 180° = S, 270° = W). Plain text only, no markup or code blocks.`;
+                      Avoid words like "is" use "will be" instead. Seriously, keep it short. No newlines or bullet points. Round the numbers. Don't insert a space between the number and the unit.
+                      Translate wind direction from degrees to shorthand cardinal directions (e.g., 0° = N, 90° = E, 180° = S, 270° = W). Plain text only, no markup or code blocks.
+                      Include what the chance of precipitation means in plain English. For example, "Chance of rain is 20%." or "Chance of rain is 0%.".
+                      Number in precipitation_probability is the chance of rain, not the amount. For example 1 means 1%
+                     `;
 
   const response = await llm.invoke([
     { role: "system", content: systemPrompt },

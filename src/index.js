@@ -58,10 +58,10 @@ frames.push(await renderTextGif([
   },
   {
     content: time(),
-    fontName: '9x18B',
+    fontName: 'profont22',
     x: 2,
     y: 7,
-    color: '#4A9AD8'
+    color: '#4a5b44'
   }], 10000));
 
 /*
