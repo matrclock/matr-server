@@ -164,8 +164,6 @@ export async function renderHorizontalScrollingTextGif(textItem, {
   return frames;
 }
 
-import { stripMircCodes } from './utils'; // Make sure this is imported
-
 export async function renderVerticalScrollingTextGif(textItem, {
   delay = 100,
   pixelsPerFrame = 1,

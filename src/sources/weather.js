@@ -96,10 +96,11 @@ async function summarizeWithGemini(weatherData) {
 
                       You'll use MIRC style color codes to set number colors. Use \x03RRGGBB format. For example, \x039C5A2D is a greenish color.
                       Use \x03 for the first color and \x0F to reset it. For example, \x039C5A2D\x0F.
-                      When you encounter a temperature, set the number to orange, along with the unit.
-                      Wind related numbers should be a yellow color. 
-                      Precipitation probability, the number and unit,  should be a blue color.
-                      All of the colors should be dim and muted, not bright.
+                      When you encounter a temperature, set the number to dim mutedorange, along with the unit.
+                      Wind related numbers should be a dim desaturated green, including the unit. 
+                      Precipitation probability, the number and unit,  should be a dim muted blue color.
+                      All other colors should be dim and muted, not bright.
+
                       For example \x039C5A2D20%\x0F or \x039C5A2D65F\x0F or \x039C5A2D5mph\x0F
                      `;
 
