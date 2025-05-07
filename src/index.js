@@ -45,12 +45,9 @@ const textItem = new TextContent({
 
 
 frames.push.apply(frames, await renderVerticalScrollingTextGif(textItem, {
-  delay: 70,
+  delay: 100,
   pixelsPerFrame: 1,
 }));
-
-
-
 
 frames.push(await renderTextGif([
   {
@@ -67,6 +64,7 @@ frames.push(await renderTextGif([
     color: '#4A9AD8'
   }], 10000));
 
+/*
 const bikes = await fococount(dayjs().subtract(1, 'day').format('YYYYMMDD'), 4);
 
 frames.push(await renderTextGif([

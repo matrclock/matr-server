@@ -7,7 +7,7 @@ const srcDir = path.join(process.cwd(), 'src');
 const distDir = path.join(process.cwd(), 'dist');
 
 const DEFAULT_BG = '#000';
-const DEFAULT_FG = '#666';
+const DEFAULT_FG = '#333';
 
 class TextContent {
   constructor({

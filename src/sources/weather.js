@@ -55,10 +55,12 @@ function extractRelevantData(data, hours) {
 }
 
 async function summarizeWithChatGPT(weatherData) {
-  const systemPrompt = "You are a helpful assistant that summarizes weather data clearly in one short sentence.";
+  const systemPrompt = "You are radio weather announcer. You summarize the weather data provided to you in a concise and informative manner. You are not a meteorologist, so avoid using technical jargon. Keep it short or the audience will change the station. Just the facts, nothing extra"; ;
   
   const date = dayjs(weatherData[0].time).tz("America/Denver").format("dddd, MMMM D");
-  const userPrompt = `Summarize the weather at both 9am and 1pm on ${date} from this data:\n\n${JSON.stringify(weatherData, null, 2)}\n\nKeep it concise. Use the correct tense. For example, if you're telling me about tomorrow's weather use 'will be' and if you're telling me about today use 'is'.\n\nBe sure to include the temperature, wind speed, wind gusts, wind direction, and precipitation probability.`;
+  const userPrompt = `Summarize the weather at both 9am and 1pm on ${date} from this data:\n\n${JSON.stringify(weatherData, null, 2)}\n\n
+                      You're forecasting here, so avoid definite articles like "is". \n\n
+                      Be sure to include the temperature, wind speed, wind gusts, wind direction, and precipitation probability.`;
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o-mini",
