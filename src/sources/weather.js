@@ -54,7 +54,6 @@ async function fetchWeatherData() {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch weather data: ${res.status}`);
   const data = await res.json();
-  console.log("Fetched weather data:", data);
 
   cache.setKey(cacheKey, data);
   return data;
@@ -116,9 +115,7 @@ export async function weather() {
   const summaryCacheKey = `weather-summary`;
   const cachedSummary = cache.getKey(summaryCacheKey);
 
-  console.log("Weather summary cache:", cachedSummary);
   if (cachedSummary) {
-    console.log("Using cached summary");
     return cachedSummary;
   }
 
@@ -130,10 +127,8 @@ export async function weather() {
     cache.setKey(summaryCacheKey, summary);
     cache.save();
 
-    console.log("Weather summary:", summary);
     return summary;
   } catch (error) {
-    console.log("Error summarizing weather data:", error);
     return "Weather probably hit a rate limit. Try again later.";
   }
   
