@@ -5,3 +5,16 @@ This generates a clock.gif, which in theory could run on the Pico, but at like 4
 
 The other file is clock.bin, which is directly decoded from clock.gif and runs at closer to 16FPS. This is what the current implementation actually uses.
 
+For the weather stuff you'll need a config.json in the root directory with a Google AI API key. Here's an example
+
+```
+{
+    "sources": {
+        "openai": {
+            "key": "sk-proj-fjghvw894grht48v9nqpgbutpwrgbiquaiebrgfhqoiuv"
+        },
+        "google": {
+            "key": "AIzauvuqh948720thg20780v"
+        }
+    }
+```
