@@ -40,18 +40,58 @@ async function drawText(ctx, textItem) {
   if (!fontCache[fontName]) fontCache[fontName] = await loadFont(fontName);
   const font = fontCache[fontName];
 
-  ctx.fillStyle = color || DEFAULT_FG; // Always use global default color
   let cursorX = x;
+  let currentColor = color || DEFAULT_FG; // Default color if none is specified
 
-  for (const ch of content) {
+  // Function to parse and set the color (format \x03RRGGBB)
+  const setColor = (colorCode) => {
+    if (colorCode && colorCode.length === 7 && colorCode[0] === '\x03') {
+      const hexColor = colorCode.slice(1); // Get the RRGGBB part
+      if (hexColor.length === 6) {
+        ctx.fillStyle = `#${hexColor}`;  // Set the color correctly
+      } else {
+        console.error('Invalid color code length');
+      }
+    }
+  };
+
+  // Initially set the color (if not provided by control codes)
+  ctx.fillStyle = currentColor;
+
+  let index = 0;
+  while (index < content.length) {
+    let ch = content[index];
+
+    // Check for color control code (\x03) - color change
+    if (ch === '\x03') {
+      // Get the next 7 characters (color code in MIRC format "\x03RRGGBB")
+      if (index + 7 <= content.length) {
+        const colorCode = content.slice(index, index + 7);
+        setColor(colorCode);
+        index += 7; // Skip the color code
+      } else {
+        index += 1; // In case the color code is malformed, just skip
+      }
+      continue;
+    }
+
+    // Check for reset control code (\x0F) - reset color
+    if (ch === '\x0F') {
+      ctx.fillStyle = color || DEFAULT_FG; // Reset to original color
+      index += 1;
+      continue;
+    }
+
+    // Otherwise, draw the character
     const glyph = font[ch];
     if (!glyph) {
+      console.warn(`Missing glyph for character: ${ch}`);
       cursorX += 4;
+      index += 1;
       continue;
     }
 
     const xOffset = glyph.xOffset || 0;
-
     for (let row = 0; row < glyph.bitmap.length; row++) {
       for (let col = 0; col < glyph.bitmap[row].length; col++) {
         if (glyph.bitmap[row][col]) {
@@ -61,8 +101,10 @@ async function drawText(ctx, textItem) {
     }
 
     cursorX += glyph.width + xOffset + 1;
+    index += 1;
   }
 }
+
 
 function clearCanvas(ctx, bg) {
   ctx.fillStyle = bg;

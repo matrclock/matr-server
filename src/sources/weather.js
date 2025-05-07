@@ -93,6 +93,14 @@ async function summarizeWithGemini(weatherData) {
                       Translate wind direction from degrees to shorthand cardinal directions (e.g., 0° = N, 90° = E, 180° = S, 270° = W). Plain text only, no markup or code blocks.
                       Include what the chance of precipitation means in plain English. For example, "Chance of rain is 20%." or "Chance of rain is 0%.".
                       Number in precipitation_probability is the chance of rain, not the amount. For example 1 means 1%
+
+                      You'll use MIRC style color codes to set number colors. Use \x03RRGGBB format. For example, \x039C5A2D is a greenish color.
+                      Use \x03 for the first color and \x0F to reset it. For example, \x039C5A2D\x0F.
+                      When you encounter a temperature, set the number to orange, along with the unit.
+                      Wind related numbers should be a yellow color. 
+                      Precipitation probability, the number and unit,  should be a blue color.
+                      All of the colors should be dim and muted, not bright.
+                      For example \x039C5A2D20%\x0F or \x039C5A2D65F\x0F or \x039C5A2D5mph\x0F
                      `;
 
   const response = await llm.invoke([

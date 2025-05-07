@@ -51,7 +51,7 @@ frames.push.apply(frames, await renderVerticalScrollingTextGif(textItem, {
 
 frames.push(await renderTextGif([
   {
-    content: 'The time is',
+    content: 'The \x039C5A2Dtime\x0F is',
     fontName: 'Tiny5-Regular',
     x: 2,
     y: 1
