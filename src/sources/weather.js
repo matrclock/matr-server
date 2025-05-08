@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc.js';
 import timezone from 'dayjs/plugin/timezone.js';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { renderTextGif, TextContent, renderVerticalScrollingTextGif } from '../renderGifText.js';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -111,7 +112,7 @@ async function summarizeWithGemini(weatherData) {
   return response.text.trim();
 }
 
-export async function weather() {
+async function weatherText() {
   const summaryCacheKey = `weather-summary`;
   const cachedSummary = cache.getKey(summaryCacheKey);
 
@@ -132,4 +133,22 @@ export async function weather() {
     return "Weather probably hit a rate limit. Try again later.";
   }
   
+}
+
+export async function weather() {
+
+  const textItem = new TextContent({
+    content: await weatherText(),
+    fontName: "Tiny5-Regular", // Replace with your actual font JSON name (without .json)
+    x: 0,
+    y: 0,
+    color: "#333",
+    lineSpacing: -7
+  });
+
+  return await renderVerticalScrollingTextGif(textItem, {
+    delay: 100,
+    pixelsPerFrame: 1,
+  });
+
 }

@@ -131,7 +131,7 @@ export async function renderTextGif(textItems, delay = 1000, { backgroundColor =
     await drawText(ctx, item); // No longer passing defaultColor
   }
 
-  return makeGifFrame(img, delay);
+  return [makeGifFrame(img, delay)];
 }
 
 export async function renderHorizontalScrollingTextGif(textItem, {
