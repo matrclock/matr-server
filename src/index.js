@@ -51,7 +51,7 @@ if (isTomorrowFriday) {
       x: 21,
       y: yOffset + 16
     }
-  ], 3000)
+  ], 5000)
   
   frames.push.apply(frames, coffeeCup);
 }
