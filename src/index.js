@@ -77,20 +77,21 @@ async function makeFrames() {
 
 // Content generation function
 async function regenerateFiles() {
-  const frames = await makeFrames();
-
-  // Write out a clock.json that contains the current time adjusted for the timezone, in ISO8601 format
-  const clockData = {
-    time: dayjs.utc().tz("America/Denver").format()
-  };
-  const clockFilePath = path.join(distDir, 'clock.json');
-  await fs.promises.writeFile(clockFilePath, JSON.stringify(clockData, null, 2));
-
-  await writeGifToFile(frames, path.join(distDir, 'clock.gif'));
-  await gifToBin(path.join(distDir, 'clock.gif'), path.join(distDir, 'clock.bin'));
-
-  console.log(`[${new Date().toISOString()}] Files regenerated.`);
-}
+    const frames = await makeFrames();
+  
+    await writeGifToFile(frames, path.join(distDir, 'clock.gif'));
+    await gifToBin(path.join(distDir, 'clock.gif'), path.join(distDir, 'clock.bin'));
+  
+    console.log(`[${new Date().toISOString()}] Files regenerated.`);
+  }
+  
+  // Clock endpoint (dynamically serve JSON)
+  app.get('/clock.json', (req, res) => {
+    const clockData = {
+      time: dayjs.utc().tz("America/Denver").format()
+    };
+    res.json(clockData);
+  });
 
 // Run immediately on startup
 await regenerateFiles();
