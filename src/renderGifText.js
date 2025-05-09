@@ -4,7 +4,6 @@ import { GifFrame, BitmapImage } from 'gifwrap';
 import pureimage from 'pureimage';
 
 const srcDir = path.join(process.cwd(), 'src');
-const distDir = path.join(process.cwd(), 'dist');
 
 const DEFAULT_BG = '#000';
 const DEFAULT_FG = '#333';

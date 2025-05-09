@@ -1,4 +1,11 @@
-import { dadJoke } from './sources/dadjoke.js';
+import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dayjs from 'dayjs';
+import timezone from 'dayjs/plugin/timezone.js';
+import utc from 'dayjs/plugin/utc.js';
+import fs from 'fs';
+
 import {
     renderTextGif,
     renderHorizontalScrollingTextGif,
@@ -6,66 +13,92 @@ import {
     renderMultilineHorizontalScrollGif,
     TextContent
 } from './renderGifText.js';
-import { binToGif, gifToBin, writeGifToFile } from './gifWriter.js';
-import { catfact } from './sources/catfact.js';
-import { timeUntil } from './sources/timeuntil.js';
-import { fococount } from './sources/fococount.js';
+import { gifToBin, writeGifToFile } from './gifWriter.js';
 import { time } from './sources/time.js';
-import dayjs from 'dayjs';
-
-import { convertAllBdfFonts } from './convertFonts.js';
 import { weather } from './sources/weather.js';
-await convertAllBdfFonts(); // Uses 'bdf' and 'glyphs' directories by default
+import { convertAllBdfFonts } from './convertFonts.js';
 
-const frames = [];
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
-const tz = "America/Denver";
-const isTomorrowFriday = dayjs.utc().tz(tz).add(1, 'day').day() === 5;
+// Setup directory paths
+const distDir = path.join(process.cwd(), 'dist');
 
-if (isTomorrowFriday) {
-  const yOffset = 3;
-  const coffeeCup = await renderTextGif([
-    {
-      content: 'Ć',
-      fontName: 'streamline_all',
-      x: -1,
-      y: 5,
-      color: '#6F4E37'
-    },
-    {
-      content: 'tomorrow is',
-      fontName: 'Tiny5-Regular',
-      x: 21,
-      y: yOffset
-    },
-    {
-      content: 'coffee',
-      fontName: 'Tiny5-Regular',
-      x: 21,
-      y: yOffset + 8,
-      color: '#4a5b44'
-    },
-    {
-      content: 'outside',
-      fontName: 'Tiny5-Regular',
-      x: 21,
-      y: yOffset + 16
-    }
-  ], 5000)
-  
-  frames.push.apply(frames, coffeeCup);
+// One-time font conversion
+await convertAllBdfFonts();
+
+// Create Express app
+const app = express();
+const PORT = process.env.PORT || 8080;
+app.use(express.static(distDir));
+
+async function makeFrames() {
+  const frames = [];
+  const tz = "America/Denver";
+  const isTomorrowFriday = dayjs.utc().tz(tz).add(1, 'day').day() === 5;
+
+  if (isTomorrowFriday) {
+      const yOffset = 3;
+      const coffeeCup = await renderTextGif([
+          {
+              content: 'Ć',
+              fontName: 'streamline_all',
+              x: -1,
+              y: 5,
+              color: '#6F4E37'
+          },
+          {
+              content: 'tomorrow is',
+              fontName: 'Tiny5-Regular',
+              x: 21,
+              y: yOffset
+          },
+          {
+              content: 'coffee',
+              fontName: 'Tiny5-Regular',
+              x: 21,
+              y: yOffset + 8,
+              color: '#4a5b44'
+          },
+          {
+              content: 'outside',
+              fontName: 'Tiny5-Regular',
+              x: 21,
+              y: yOffset + 16
+          }
+      ], 5000);
+      frames.push(...coffeeCup);
+  }
+
+  frames.push(...await weather());
+  frames.push(...await time());
+  return frames;
 }
 
+// Content generation function
+async function regenerateFiles() {
+  const frames = await makeFrames();
 
-frames.push.apply(frames, await weather());
-frames.push.apply(frames, await time());
+  // Write out a clock.json that contains the current time adjusted for the timezone, in ISO8601 format
+  const clockData = {
+    time: dayjs.utc().tz("America/Denver").format()
+  };
+  const clockFilePath = path.join(distDir, 'clock.json');
+  await fs.promises.writeFile(clockFilePath, JSON.stringify(clockData, null, 2));
 
+  await writeGifToFile(frames, path.join(distDir, 'clock.gif'));
+  await gifToBin(path.join(distDir, 'clock.gif'), path.join(distDir, 'clock.bin'));
 
+  console.log(`[${new Date().toISOString()}] Files regenerated.`);
+}
 
-  
-  
-await writeGifToFile(frames, 'clock.gif');
-await gifToBin('clock.gif', 'clock.bin');
-//await binToGif('clock.bin', 'clockbin.gif');
+// Run immediately on startup
+await regenerateFiles();
 
+// Re-run every 60 seconds
+setInterval(regenerateFiles, 60 * 1000);
 
+// Start server
+app.listen(PORT, () => {
+    console.log(`Server running at http://localhost:${PORT}`);
+});
