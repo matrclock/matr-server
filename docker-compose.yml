@@ -7,21 +7,10 @@ services:
     volumes:
       - ./:/app
     working_dir: /app
-    command: sh -c "while true; do npm install && npm run generate; sleep 60; done"
+    command: npm run start
     restart: unless-stopped
     networks:
       - cloudflare-net
-
-  web:
-    image: nginx:alpine
-    container_name: clock-web
-    volumes:
-      - ./dist:/usr/share/nginx/html:ro
-    networks:
-      - cloudflare-net
-    depends_on:
-      - generator
-    restart: unless-stopped
 
   cloudflare:
     image: cloudflare/cloudflared:latest
@@ -29,11 +18,11 @@ services:
     networks:
       - cloudflare-net
     depends_on:
-      - web
+      - generator
     environment:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
     restart: unless-stopped
-    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN}
+    command: tunnel --no-autoupdate run --token ${TUNNEL_TOKEN} --url http://clock-generator:8080
 
 networks:
   cloudflare-net:
