@@ -19,8 +19,8 @@ await convertAllBdfFonts(); // Uses 'bdf' and 'glyphs' directories by default
 
 const frames = [];
 
-
-const isTomorrowFriday = dayjs().add(1, 'day').day() === 5;
+const tz = "America/Denver";
+const isTomorrowFriday = dayjs.utc().tz(tz).add(1, 'day').day() === 5;
 
 if (isTomorrowFriday) {
   const yOffset = 3;
