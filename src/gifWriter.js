@@ -2,25 +2,25 @@ import fs from 'fs';
 import path from 'path';
 import { GifCodec, GifFrame, BitmapImage, GifUtil } from 'gifwrap';
 
-export async function writeGifToFile(frames, filename) {
+export async function getGifData(frames) {
     const codec = new GifCodec();
     const frameArray = Array.isArray(frames) ? frames : [frames];
     const { buffer } = await codec.encodeGif(frameArray, { loops: 0 });
-    await fs.promises.writeFile(filename, buffer);
+    const dwell = frames.reduce((sum, frame) => sum + frame.delayCentisecs * 10, 0);
+    return { buffer, dwell };
 }
 
-export async function gifToBin(inputFilename, outputFilename) {
-    const gif = await GifUtil.read(inputFilename);
-
-    const width = gif.frames[0].bitmap.width;
-    const height = gif.frames[0].bitmap.height;
-    const frameCount = gif.frames.length;
+export async function gifFramesToBin(frames) {
+    console.log(frames)
+    const width = frames[0].bitmap.width;
+    const height = frames[0].bitmap.height;
+    const frameCount = frames.length;
 
     const palette = [];
     const colorMap = new Map();
     const frameBuffers = [];
 
-    for (const frame of gif.frames) {
+    for (const frame of frames) {
         const bmp = frame.bitmap;
         const pixels = bmp.data;
         const indices = Buffer.alloc(width * height);
@@ -70,7 +70,7 @@ export async function gifToBin(inputFilename, outputFilename) {
     });
 
     const output = Buffer.concat([header, ...frameData]);
-    await fs.promises.writeFile(outputFilename, output);
+    return output
 }
 
 export async function binToGif(inputFilename, outputFilename) {
@@ -126,4 +126,14 @@ export async function binToGif(inputFilename, outputFilename) {
     await fs.promises.mkdir(path.dirname(outputFilename), { recursive: true });
     await fs.promises.writeFile(outputFilename, gifBuffer);
 
+}
+
+export async function writeGifToFile(frames, filename) {
+    const {buffer} = await getGifData(frames);
+    await fs.promises.writeFile(filename, buffer);
+}
+
+export async function writeBinToFile(frames, filename) {
+    const output = await gifFramesToBin(frames);
+    await fs.promises.writeFile(filename, output);
 }

@@ -13,16 +13,19 @@ import {
     renderMultilineHorizontalScrollGif,
     TextContent
 } from './renderGifText.js';
-import { gifToBin, writeGifToFile } from './gifWriter.js';
+import { writeGifToFile, writeBinToFile, getGifData, gifFramesToBin} from './gifWriter.js';
 import { time } from './sources/time.js';
 import { weather } from './sources/weather.js';
 import { convertAllBdfFonts } from './convertFonts.js';
+import { loadConfig } from './loadConfig.js';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 // Setup directory paths
 const distDir = path.join(process.cwd(), 'dist');
+const config = await loadConfig();
+
 
 // One-time font conversion
 await convertAllBdfFonts();
@@ -31,6 +34,32 @@ await convertAllBdfFonts();
 const app = express();
 const PORT = process.env.PORT || 8080;
 app.use(express.static(distDir));
+// a middleware with no mount path; gets executed for every request to the app
+app.use(function(req, res, next) {
+    res.setHeader('matr-time', Math.round(new Date().getTime()/1000))
+    next();
+});
+
+// Clock endpoint (dynamically serve JSON)
+app.get('/nextgif', async (req, res) => {
+    res.set('Content-Type', 'image/gif');
+
+    const frames = await makeFrames();
+    const { buffer, dwell } = await getGifData(frames);
+    res.setHeader('matr-dwell', dwell);
+    res.send(buffer);
+});
+
+// Clock endpoint (dynamically serve JSON)
+app.get('/next', async (req, res) => {
+    res.set('Content-Type', 'image/gif');
+
+    const frames = await makeFrames();
+    const { dwell } = await getGifData(frames);
+    const buffer = await gifFramesToBin(frames);
+    res.setHeader('matr-dwell', dwell);
+    res.send(buffer);
+});
 
 async function makeFrames() {
   const frames = [];
@@ -70,8 +99,13 @@ async function makeFrames() {
       frames.push(...coffeeCup);
   }
 
-  frames.push(...await weather());
-  frames.push(...await time());
+  const apps = [await weather(), await time()];
+  apps.forEach(app => {
+      frames.push(...app);
+  });
+
+  //frames.push(...await weather());
+  //frames.push(...await time());
   return frames;
 }
 
@@ -80,18 +114,10 @@ async function regenerateFiles() {
     const frames = await makeFrames();
   
     await writeGifToFile(frames, path.join(distDir, 'clock.gif'));
-    await gifToBin(path.join(distDir, 'clock.gif'), path.join(distDir, 'clock.bin'));
+    await writeBinToFile(frames, path.join(distDir, 'clock.bin'));
   
     console.log(`[${new Date().toISOString()}] Files regenerated.`);
-  }
-  
-  // Clock endpoint (dynamically serve JSON)
-  app.get('/clock.json', (req, res) => {
-    const clockData = {
-      time: dayjs.utc().tz("America/Denver").format()
-    };
-    res.json(clockData);
-  });
+}
 
 // Run immediately on startup
 await regenerateFiles();
