@@ -85,6 +85,7 @@ async function makeFrames(requestCount) {
         }
     }
 
+    /*
     for (let i = 5; i > 0; i--) {
         const result = await renderTextGif([
             {
@@ -102,6 +103,7 @@ async function makeFrames(requestCount) {
         apps.push(result);
     }
     console.log(apps.length)
+    */
 
     const dwellTimes = await Promise.all(apps.map(app => calculateDwell(app)));
 
