@@ -2,16 +2,22 @@ import fs from 'fs';
 import path from 'path';
 import { GifCodec, GifFrame, BitmapImage, GifUtil } from 'gifwrap';
 
+export async function calculateDwell(frames) {
+    return frames.reduce((sum, frame) => sum + frame.delayCentisecs * 10, 0);
+}
+
 export async function getGifData(frames) {
     const codec = new GifCodec();
     const frameArray = Array.isArray(frames) ? frames : [frames];
-    const { buffer } = await codec.encodeGif(frameArray, { loops: 0 });
-    const dwell = frames.reduce((sum, frame) => sum + frame.delayCentisecs * 10, 0);
-    return { buffer, dwell };
+    return await codec.encodeGif(frameArray, { loops: 0 });
+}
+
+export async function getBinData(frames) {
+    const frameArray = Array.isArray(frames) ? frames : [frames];
+    return await gifFramesToBin(frameArray);
 }
 
 export async function gifFramesToBin(frames) {
-    console.log(frames)
     const width = frames[0].bitmap.width;
     const height = frames[0].bitmap.height;
     const frameCount = frames.length;
