@@ -20,7 +20,6 @@ import { on } from 'events';
 const apps = [
     {app: pixlet('sunrise_sunset'), dwell: 5}, 
     {app: weather}, 
-    {app: pixlet('xtrabyt', {key: "FUo73MLD"}), dwell: 3},
     {app: time}, 
     {app: coffeeOutside}
 ];
