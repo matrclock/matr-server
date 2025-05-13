@@ -101,7 +101,7 @@ def main(config):
         middle = render.Box(
             width = 64,
             height = 1,
-            color = "#a00",
+            color = "#300",
         )
 
         bottom = render.Row(
