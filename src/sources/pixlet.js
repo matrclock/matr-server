@@ -4,6 +4,7 @@ import { loadConfig } from "../loadConfig.js";
 import path from "path";
 
 const srcDir = path.join(process.cwd(), 'src');
+const distDir = path.join(process.cwd(), 'dist');
 
 
 export const pixlet = async () => {
@@ -15,8 +16,8 @@ export const pixlet = async () => {
 
     // Run pixlet command, output to /tmp/pixlet.gif
     const { exec } = await import('child_process');
-    await exec(`${pixletPath} render -gif -o /tmp/pixlet.gif ${starfile}`);
+    await exec(`${pixletPath} render -gif -o ${distDir}/pixlet/pixlet.gif ${starfile}`);
 
     // Read the file and return the buffer
-    return gifFileToFrames('/tmp/pixlet.gif');
+    return gifFileToFrames(`${distDir}/pixlet/pixlet.gif`);
   }
