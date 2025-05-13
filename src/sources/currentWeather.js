@@ -98,6 +98,6 @@ export async function currentWeather() {
 
     
   
-  ], 3000)
+  ], 5000)
 
 }
