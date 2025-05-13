@@ -16,8 +16,8 @@ export const pixlet = async () => {
 
     // Run pixlet command, output to /tmp/pixlet.gif
     const { exec } = await import('child_process');
-    await exec(`${pixletPath} render -gif -o ${distDir}/pixlet/pixlet.gif ${starfile}`);
+    await exec(`${pixletPath} render -gif -o ${distDir}/pixlet.gif ${starfile}`);
 
     // Read the file and return the buffer
-    return gifFileToFrames(`${distDir}/pixlet/pixlet.gif`);
+    return gifFileToFrames(`${distDir}/pixlet.gif`);
   }
