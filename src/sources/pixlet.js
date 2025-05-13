@@ -12,14 +12,12 @@ export const pixlet = async () => {
     const config = await loadConfig();
     const pixletPath = config.sources.pixlet.path;
 
-    console.log(pixletPath);
 
     const starfile = path.join(srcDir, 'sources', 'pixlet', 'sunrise_sunset.star');
 
     // Run pixlet command, output to /tmp/pixlet.gif
     const { exec } = await import('child_process');
     const foo = await exec(`${pixletPath} render --gif -o ${distDir}/pixlet.gif ${starfile}`);
-    console.log(foo)
 
     // Read the file and return the buffer
     return gifFileToFrames(`${distDir}/pixlet.gif`);
