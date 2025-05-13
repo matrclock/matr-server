@@ -12,7 +12,7 @@ import { loadConfig } from './loadConfig.js';
 import { coffeeOutside } from './sources/coffeeoutside.js';
 import { time } from './sources/time.js';
 import { weather } from './sources/weather.js';
-import { renderTextGif } from './renderGifText.js';
+import { emptyframe } from './sources/emptyframe.js';
 import { on } from 'events';
 
 dayjs.extend(utc);
@@ -75,15 +75,16 @@ function getResponseMethod(dataFn, contentType) {
 async function makeFrames(requestCount) {
     const frames = [];
 
-    const apps = [];
-    const appNames = [weather, time, coffeeOutside];
+    const apps = [weather, time, coffeeOutside];
 
+    /*
     for (const app of appNames) {
         const result = await app();
         if (result.length > 0) {
             apps.push(result);
         }
     }
+    */
 
     /*
     for (let i = 5; i > 0; i--) {
@@ -104,19 +105,16 @@ async function makeFrames(requestCount) {
     }
     console.log(apps.length)
     */
-
-    const dwellTimes = await Promise.all(apps.map(app => calculateDwell(app)));
-
-    const dwellStartTimes = [0];
-    for (const dwell of dwellTimes) {
-      dwellStartTimes.push(dwellStartTimes[dwellStartTimes.length - 1] + await dwell);
-    }
-
-    const totalDuration = dwellStartTimes[dwellStartTimes.length - 1];
     
     const index = requestCount % apps.length;
     console.log('index', index+1)
-    return apps[index];
+    const app = await apps[index]();
+
+    if (app.length === 0) {
+        return await emptyframe();
+    }
+
+    return await apps[index]();
 }
 
 // Content generation function
