@@ -60,7 +60,7 @@ export async function currentWeather() {
       color: '#333333'
     },
     {
-      content:  '1' + String(Math.round(windSpeed)) + 'mph',
+      content:  String(Math.round(windSpeed)) + 'mph',
       fontName: 'Tiny5-Regular',
       x: 1,
       y: 21,
