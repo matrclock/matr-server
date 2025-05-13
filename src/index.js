@@ -12,6 +12,7 @@ import { loadConfig } from './loadConfig.js';
 import { coffeeOutside } from './sources/coffeeoutside.js';
 import { time } from './sources/time.js';
 import { weather } from './sources/weather.js';
+import { currentWeather } from './sources/currentWeather.js';
 import { emptyframe } from './sources/emptyframe.js';
 import { pixlet } from './sources/pixlet.js';
 import { on } from 'events';
@@ -19,8 +20,8 @@ import { on } from 'events';
 
 const apps = [
     {app: pixlet('sunrise_sunset'), dwell: 5}, 
+    {app: currentWeather},
     {app: weather}, 
-    {app: pixlet('xtrabyt', {key: "FUo73MLD"}), dwell: 3},
     {app: time}, 
     {app: coffeeOutside}
 ];
