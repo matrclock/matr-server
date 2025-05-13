@@ -13,7 +13,7 @@ export const pixlet = async () => {
     const pixletPath = config.sources.pixlet.path;
 
 
-    const starfile = path.join(srcDir, 'sources', 'pixlet', 'sunrise_sunset.star');
+    const starfile = path.join(srcDir, 'sources', 'pixlet', 'apps', 'sunrise_sunset', 'sunrise_sunset.star');
 
     // Run pixlet command, output to /tmp/pixlet.gif
     const { exec } = await import('child_process');

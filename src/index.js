@@ -21,7 +21,7 @@ const apps = [
     {app: pixlet, dwell: 5}, 
     {app: weather}, 
     {app: time}, 
-    //{app: coffeeOutside}
+    {app: coffeeOutside}
 ];
 
 
@@ -87,7 +87,8 @@ async function findApp(requestCount) {
     const dwell = apps[index].dwell;
 
     if (app.length === 0) {
-        return await emptyframe();
+        const app = await emptyframe();
+        return {app, dwell: 0.1};
     }
 
 
