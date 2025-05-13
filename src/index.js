@@ -13,7 +13,17 @@ import { coffeeOutside } from './sources/coffeeoutside.js';
 import { time } from './sources/time.js';
 import { weather } from './sources/weather.js';
 import { emptyframe } from './sources/emptyframe.js';
+import { pixlet } from './sources/pixlet.js';
 import { on } from 'events';
+
+
+const apps = [
+    {app: pixlet, dwell: 5}, 
+    {app: weather}, 
+    {app: time}, 
+    //{app: coffeeOutside}
+];
+
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -52,7 +62,6 @@ app.use((req, res, next) => {
         session.requestCount++;
     }
 
-    console.log('SESSION', sessionId, session)
     req.session = session;
     next();
 });
@@ -63,68 +72,26 @@ app.get('/nextgif', getResponseMethod(getGifData, 'image/gif'));
 function getResponseMethod(dataFn, contentType) {
     return async (req, res) => {
         res.set('Content-Type', contentType);
-        const timeMs = req.headers['matr-time'] * 1000 || Date.now();
-        const frames = await makeFrames(req.session.requestCount);
+        const result = await findApp(req.session.requestCount);
+        const frames = await result.app;
+        const dwell = result.dwell || await calculateDwell(frames);
         const buffer = await dataFn(frames);
-        const dwell = await calculateDwell(frames);
         res.setHeader('matr-dwell', dwell);
         res.send(buffer);   
     }
 }
 
-async function makeFrames(requestCount) {
-    const frames = [];
-
-    const apps = [weather, time, coffeeOutside];
-
-    /*
-    for (const app of appNames) {
-        const result = await app();
-        if (result.length > 0) {
-            apps.push(result);
-        }
-    }
-    */
-
-    /*
-    for (let i = 5; i > 0; i--) {
-        const result = await renderTextGif([
-            {
-                content: 'Next \x039C5A2Dapp\x0F in',
-                fontName: 'Tiny5-Regular',
-                x: 2,
-                y: 1
-            },{
-                content: String(i),
-                fontName: 'profont22',
-                x: 2,
-                y: 7,
-                color: '#4a5b44'
-            }], 1000)
-        apps.push(result);
-    }
-    console.log(apps.length)
-    */
-    
+async function findApp(requestCount) {
     const index = requestCount % apps.length;
-    console.log('index', index+1)
-    const app = await apps[index]();
+    const app = await apps[index].app();
+    const dwell = apps[index].dwell;
 
     if (app.length === 0) {
         return await emptyframe();
     }
 
-    return await apps[index]();
-}
 
-// Content generation function
-async function regenerateFiles() {
-    const frames = await makeFrames();
-  
-    await writeGifToFile(frames, path.join(distDir, 'clock.gif'));
-    await writeBinToFile(frames, path.join(distDir, 'clock.bin'));
-  
-    console.log(`[${new Date().toISOString()}] Files regenerated.`);
+    return {app, dwell}
 }
 
 setInterval(() => {

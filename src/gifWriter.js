@@ -3,7 +3,8 @@ import path from 'path';
 import { GifCodec, GifFrame, BitmapImage, GifUtil } from 'gifwrap';
 
 export async function calculateDwell(frames) {
-    return frames.reduce((sum, frame) => sum + frame.delayCentisecs * 10, 0);
+    if (frames.length === 0) return 100;
+    return frames.reduce((sum, frame) => sum + frame.delayCentisecs / 100, 0);
 }
 
 export async function getGifData(frames) {
@@ -15,6 +16,11 @@ export async function getGifData(frames) {
 export async function getBinData(frames) {
     const frameArray = Array.isArray(frames) ? frames : [frames];
     return await gifFramesToBin(frameArray);
+}
+
+export async function gifFileToFrames(filename) {
+    const gif = await GifUtil.read(filename);
+    return gif.frames;
 }
 
 export async function gifFramesToBin(frames) {
