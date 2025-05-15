@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Round Pixel GIF</title>
+  <style>
+    html, body {
+      margin: 0;
+      background: black;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    #gif {
+      image-rendering: pixelated;
+      width: 960px;
+      height: 480px;
+      mask-image: radial-gradient(circle, white 60%, transparent 61%);
+      mask-size: 15px 15px;
+      mask-repeat: repeat;
+      -webkit-mask-image: radial-gradient(circle, white 60%, transparent 61%);
+      -webkit-mask-size: 15px 15px;
+      -webkit-mask-repeat: repeat;
+    }
+  </style>
+</head>
+<body>
+  <img id="gif" alt="Round Pixel GIF">
+
+  <script>
+    const img = document.getElementById('gif');
+
+    async function loadGifLoop() {
+      while (true) {
+        try {
+          const res = await fetch('/nextgif', { cache: 'no-store' });
+          const dwell = parseFloat(res.headers.get('matr-dwell')) || 3;
+          const blob = await res.blob();
+
+          // Create an object URL and update the image
+          const url = URL.createObjectURL(blob);
+          img.src = url;
+
+          // Wait for the dwell time
+          await new Promise(resolve => setTimeout(resolve, dwell * 1000));
+
+          // Revoke the URL to free memory
+          URL.revokeObjectURL(url);
+        } catch (err) {
+          console.error('Failed to load /nextgif:', err);
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+      }
+    }
+
+    loadGifLoop();
+  </script>
+</body>
+</html>
