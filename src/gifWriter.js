@@ -10,7 +10,8 @@ export async function calculateDwell(frames) {
 export async function getGifData(frames) {
     const codec = new GifCodec();
     const frameArray = Array.isArray(frames) ? frames : [frames];
-    return await codec.encodeGif(frameArray, { loops: 0 });
+    const gif = await codec.encodeGif(frameArray, { loops: 0 });
+    return gif.buffer
 }
 
 export async function getBinData(frames) {
