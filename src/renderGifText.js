@@ -176,78 +176,94 @@ export async function renderVerticalScrollingTextGif(textItem, {
   const maxWidth = 64;
 
   const lines = [];
-  let currentLine = '', currentWidth = 0;
-  const words = textItem.content.split(/(\s+)/); // Keep spaces for proper wrapping
+  const paragraphs = textItem.content.split('\n');
 
-  for (const word of words) {
-    const plainWord = stripMircCodes(word);
-    let wordWidth = 0;
-    for (const ch of plainWord) wordWidth += font[ch] ? font[ch].width + 1 : 4;
+  for (const paragraph of paragraphs) {
+    let currentLine = '', currentWidth = 0, activeCodes = '';
+    const words = paragraph.split(/(\s+)/); // Keep spaces for wrapping
 
-    if (wordWidth <= maxWidth) {
-      if (currentWidth + wordWidth > maxWidth && currentLine) {
-        lines.push(currentLine.trim());
-        currentLine = word.trimStart();
-        currentWidth = [...stripMircCodes(currentLine)].reduce((w, ch) => w + (font[ch] ? font[ch].width + 1 : 4), 0);
+    for (const word of words) {
+      const plainWord = stripMircCodes(word);
+      let wordWidth = 0;
+      for (const ch of plainWord) wordWidth += font[ch] ? font[ch].width + 1 : 4;
+
+      if (wordWidth <= maxWidth) {
+        if (currentWidth + wordWidth > maxWidth && currentLine) {
+          lines.push(currentLine.trimEnd());
+          currentLine = activeCodes + word.trimStart();
+          currentWidth = [...stripMircCodes(currentLine)].reduce((w, ch) => w + (font[ch] ? font[ch].width + 1 : 4), 0);
+        } else {
+          currentLine += word;
+          currentWidth += wordWidth;
+        }
+        // Update active color code
+        const match = word.match(/\x03[0-9A-Fa-f]{6}/g);
+        if (match) activeCodes = match[match.length - 1];
+        if (word.includes('\x0F')) activeCodes = '';
       } else {
-        currentLine += word;
-        currentWidth += wordWidth;
-      }
-    } else {
-      // Split long word with color codes preserved
-      let i = 0, part = '', partPlain = '', partWidth = 0;
-      let activeCodes = '';
+        // Split long word with color codes preserved
+        let i = 0, part = '', partPlain = '', partWidth = 0;
+        let localCodes = activeCodes;
 
-      while (i < word.length) {
-        const ch = word[i];
-        if (ch === '\x03') {
-          const colorCode = word.slice(i, i + 7).match(/\x03[0-9A-Fa-f]{6}/);
-          if (colorCode) {
-            activeCodes = colorCode[0];
-            part += activeCodes;
-            i += 7;
+        while (i < word.length) {
+          const ch = word[i];
+          if (ch === '\x03') {
+            const colorCode = word.slice(i, i + 7).match(/\x03[0-9A-Fa-f]{6}/);
+            if (colorCode) {
+              localCodes = colorCode[0];
+              part += localCodes;
+              i += 7;
+              continue;
+            }
+          } else if (ch === '\x0F') {
+            localCodes = '';
+            part += '\x0F';
+            i++;
             continue;
           }
-        } else if (ch === '\x0F') {
-          activeCodes = '';
-          part += '\x0F';
+
+          const plainCh = stripMircCodes(ch);
+          const chWidth = font[plainCh] ? font[plainCh].width + 1 : 4;
+          if (partWidth + chWidth > maxWidth - 5) break;
+
+          part += ch;
+          partPlain += plainCh;
+          partWidth += chWidth;
           i++;
-          continue;
         }
 
-        const plainCh = stripMircCodes(ch);
-        const chWidth = font[plainCh] ? font[plainCh].width + 1 : 4;
-        if (partWidth + chWidth > maxWidth - 5) break;
+        const needsHyphen = i < word.length;
+        if (needsHyphen) {
+          part += '-';
+          partWidth += font['-'] ? font['-'].width + 1 : 4;
+        }
 
-        part += ch;
-        partPlain += plainCh;
-        partWidth += chWidth;
-        i++;
-      }
+        if (currentWidth + partWidth > maxWidth && currentLine) {
+          lines.push(currentLine.trimEnd());
+          currentLine = activeCodes + part;
+          currentWidth = partWidth;
+        } else {
+          currentLine += part;
+          currentWidth += partWidth;
+        }
 
-      const needsHyphen = i < word.length;
-      if (needsHyphen) {
-        part += '-';
-        partWidth += font['-'] ? font['-'].width + 1 : 4;
-      }
+        if (currentWidth >= maxWidth || needsHyphen) {
+          lines.push(currentLine.trimEnd());
+          currentLine = activeCodes;
+          currentWidth = 0;
+        }
 
-      if (currentWidth + partWidth > maxWidth && currentLine) {
-        lines.push(currentLine.trim());
-        currentLine = part;
-        currentWidth = partWidth;
-      } else {
-        currentLine += part;
-        currentWidth += partWidth;
-      }
-
-      if (currentWidth >= maxWidth || needsHyphen) {
-        lines.push(currentLine.trim());
-        currentLine = '';
-        currentWidth = 0;
+        // Update activeCodes for next part
+        if (word.includes('\x0F')) activeCodes = '';
+        else {
+          const match = word.match(/\x03[0-9A-Fa-f]{6}/g);
+          if (match) activeCodes = match[match.length - 1];
+        }
       }
     }
+
+    if (currentLine.trim()) lines.push(currentLine.trimEnd());
   }
-  if (currentLine) lines.push(currentLine.trim());
 
   const totalHeight = lines.length * (glyphHeight + textItem.lineSpacing);
   const totalFrames = Math.ceil((totalHeight + 32) / pixelsPerFrame);
@@ -268,7 +284,7 @@ export async function renderVerticalScrollingTextGif(textItem, {
         y: yPos,
         color: textColor
       });
-      drawText(ctx, lineItem); // Handles color codes inside
+      drawText(ctx, lineItem);
     });
 
     frames.push(makeGifFrame(img, delay));
@@ -276,6 +292,8 @@ export async function renderVerticalScrollingTextGif(textItem, {
 
   return frames;
 }
+
+
 
 
 export async function renderMultilineHorizontalScrollGif({
