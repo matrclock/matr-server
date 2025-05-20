@@ -21,10 +21,10 @@ import { todoist } from './sources/todoist.js';
 const apps = [
     {app: todoist},
     {app: pixlet('sunrise_sunset'), dwell: 5}, 
-    //{app: currentWeather},
-    //{app: weather}, 
-    //{app: time}, 
-    //{app: coffeeOutside}
+    {app: currentWeather},
+    {app: weather}, 
+    {app: time}, 
+    {app: coffeeOutside}
 ];
 
 
