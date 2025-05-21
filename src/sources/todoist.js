@@ -33,49 +33,24 @@ export function todoist(start = 0, stop = 4) {
       const tasks = await tasksRes.json();
       const taskSlice = tasks.slice(start, stop).map(task => task.content);
   
-      // Step 3: Render scrolling text
-      const textItems = [
-        new TextContent({
-          content: '1.' + taskSlice[0],
+      const speeds = [1, Math.sqrt(2), Math.E-1, Math.PI/2].sort(() => Math.random() - 0.5);
+      const colors = ['#ccc', '#666', '#333', '#999'].sort(() => Math.random() - 0.5);
+
+      const textItems = taskSlice.map((task, idx) => {
+        return new TextContent({
+          content: idx + 1 + '.' + task,
           fontName: "Tiny5-Regular", // Adjust as needed
           x: 0,
-          y: 0,
-          pixelsPerFrame: 1/2,
-          color: "#ccc",
+          y: idx * 8,
+          pixelsPerFrame: speeds[idx],
+          color: colors[idx],
           lineSpacing: -7
-        }),
-        new TextContent({
-          content: '2.' + taskSlice[1],
-          fontName: "Tiny5-Regular", // Adjust as needed
-          x: 0,
-          y: 8,
-          pixelsPerFrame: 4/5,
-          color: "#666",
-          lineSpacing: -7
-        }),
-        new TextContent({
-          content: '3.' + taskSlice[2],
-          fontName: "Tiny5-Regular", // Adjust as needed
-          x: 0,
-          pixelsPerFrame: 3/4,
-          y: 16,
-          color: "#333",
-          lineSpacing: -7
-        }),
-        new TextContent({
-          content: '4.' + taskSlice[3],
-          fontName: "Tiny5-Regular", // Adjust as needed
-          pixelsPerFrame: 2/3,
-          x: 0,
-          y: 24,
-          color: "#999",
-          lineSpacing: -7
-        }),
-      ];
+        });
+      });
   
       return await renderMultilineHorizontalScrollGif({
         textItems,
-        delay: 50,
+        delay: 100,
         pixelsPerFrame: 1,
       });
   
