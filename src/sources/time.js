@@ -8,7 +8,8 @@ dayjs.extend(timezone);
 
 const tz = "America/Denver";
 
-export const time = async () => {
+export function time(delay) {
+  return async () => {
     const now = dayjs.utc().tz(tz);
     const theTime = now.format('HH:mm');
     return await renderTextGif([
@@ -24,6 +25,8 @@ export const time = async () => {
         x: 2,
         y: 7,
         color: '#4a5b44'
-      }], 10000)
+      }], delay * 1000)
   }
+}
+
   
