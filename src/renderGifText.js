@@ -15,7 +15,8 @@ class TextContent {
     x = 0,
     y = 0,
     color = null,
-    lineSpacing = 1
+    lineSpacing = 1,
+    pixelsPerFrame = 1
   }) {
     this.content = content;
     this.fontName = fontName;
@@ -23,6 +24,7 @@ class TextContent {
     this.y = y;
     this.color = color;
     this.lineSpacing = lineSpacing;
+    this.pixelsPerFrame = pixelsPerFrame;
   }
 }
 
@@ -321,7 +323,7 @@ export async function renderMultilineHorizontalScrollGif({
     clearCanvas(ctx, backgroundColor);
 
     for (const item of textItems) {
-      const scrollItem = new TextContent({ ...item, x: 64 - i * pixelsPerFrame });
+      const scrollItem = new TextContent({ ...item, x: 64 - i * (item.pixelsPerFrame || pixelsPerFrame) });
       drawText(ctx, scrollItem);
     }
 
