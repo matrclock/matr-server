@@ -39,7 +39,7 @@ export const coffeeOutside = async () => {
             x: 21,
             y: yOffset + 16
         }
-    ], 5000);
+    ], 1000);
   } else {
     return [];
   }

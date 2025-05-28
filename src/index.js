@@ -15,6 +15,7 @@ import { weather } from './sources/weather.js';
 import { currentWeather } from './sources/currentWeather.js';
 import { emptyframe } from './sources/emptyframe.js';
 import { pixlet } from './sources/pixlet.js';
+import { trashday } from './sources/trashday.js';
 import { todoist } from './sources/todoist.js';
 
 
@@ -27,9 +28,10 @@ const apps = [
     {app: currentWeather},
     {app: time(5)}, 
     {app: weather}, 
-    
     {app: time(5)}, 
-    {app: coffeeOutside}
+    {app: coffeeOutside, dwell: 5},
+
+    {app: trashday, dwell: 5}
 ];
 
 
