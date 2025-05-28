@@ -19,6 +19,7 @@ import { todoist } from './sources/todoist.js';
 
 
 const apps = [
+    
     {app: todoist(0,4)},
     {app: time(5)},     
     {app: pixlet('sunrise_sunset'), dwell: 5}, 
@@ -26,6 +27,7 @@ const apps = [
     {app: currentWeather},
     {app: time(5)}, 
     {app: weather}, 
+    
     {app: time(5)}, 
     {app: coffeeOutside}
 ];
@@ -78,7 +80,7 @@ app.get('/nextgif', getResponseMethod(getGifData, 'image/gif'));
 function getResponseMethod(dataFn, contentType) {
     return async (req, res) => {
         res.set('Content-Type', contentType);
-        const result = await findApp(req.session.requestCount);
+        const result = await findApp(req.session);
         const frames = await result.app;
         const dwell = result.dwell || await calculateDwell(frames);
         const buffer = await dataFn(frames);
@@ -87,18 +89,22 @@ function getResponseMethod(dataFn, contentType) {
     }
 }
 
-async function findApp(requestCount) {
-    const index = requestCount % apps.length;
+async function findApp(session, counter = 0) {
+    const index = session.requestCount % apps.length;
     const app = await apps[index].app();
     const dwell = apps[index].dwell;
 
     if (app.length === 0) {
-        const app = await emptyframe();
-        return {app, dwell: 0.01};
-    }
+        if (counter < apps.length - 1) {
+            session.requestCount++;
+            return findApp(session, counter + 1);
+        } else {
+            const app = await emptyframe();
+            return {app, dwell: 10};
+        }
+    } 
 
-
-    return {app, dwell}
+    return {app, dwell};
 }
 
 setInterval(() => {
