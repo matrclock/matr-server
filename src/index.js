@@ -28,10 +28,14 @@ const apps = [
     {app: currentWeather},
     {app: time(5)}, 
     {app: weather}, 
+    
     {app: time(5)}, 
+
+    
     {app: coffeeOutside, dwell: 5},
 
     {app: trashday, dwell: 5}
+    
 ];
 
 
