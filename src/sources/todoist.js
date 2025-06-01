@@ -17,7 +17,7 @@ export function todoist(start = 0, stop = 4) {
       });
   
       const projects = await projectsRes.json();
-      const masterProject = projects.find(p => p.name === 'Master');
+      const masterProject = projects.find(p => p.name === 'Inbox');
   
       if (!masterProject) {
         throw new Error('Project "Master" not found.');
