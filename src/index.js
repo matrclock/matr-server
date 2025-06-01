@@ -100,7 +100,7 @@ async function findApp(session, counter = 0) {
     const app = await apps[index].app();
     const dwell = apps[index].dwell;
 
-    if (app.length === 0) {
+    if (app && app.length === 0) {
         if (counter < apps.length - 1) {
             session.requestCount++;
             return findApp(session, counter + 1);
