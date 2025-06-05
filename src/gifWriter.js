@@ -3,7 +3,7 @@ import path from 'path';
 import { GifCodec, GifFrame, BitmapImage, GifUtil } from 'gifwrap';
 
 export async function calculateDwell(frames) {
-    if (frames.length === 0) return 100;
+    if (!frames || frames.length === 0) return 100;
     return frames.reduce((sum, frame) => sum + frame.delayCentisecs / 100, 0);
 }
 
