@@ -19,7 +19,7 @@ export function daysUntil({ date, text, icon }) {
       
       const countdown = days(date, tz);
 
-      const yOffset = 3;
+      const yOffset = 1;
       return await renderTextGif([
           {
               content: icon,
