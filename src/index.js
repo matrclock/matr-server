@@ -17,18 +17,24 @@ import { emptyframe } from './sources/emptyframe.js';
 import { pixlet } from './sources/pixlet.js';
 import { trashday } from './sources/trashday.js';
 import { todoist } from './sources/todoist.js';
+import { daysUntil } from './sources/daysuntil.js';
 
 
 const apps = [
-    
+    {app: daysUntil({
+        date: '2025-07-09',
+        text: 'France',
+        icon: 'ʟ',
+    }), dwell: 5},
+    {app: time()}, 
     {app: todoist(0,4)},
-    {app: time(5)},     
+    {app: time()},     
     {app: pixlet('sunrise_sunset'), dwell: 5}, 
-    {app: time(5)}, 
+    {app: time()}, 
     {app: currentWeather},
-    {app: time(5)}, 
+    {app: time()}, 
     {app: weather}, 
-    {app: time(5)}, 
+    {app: time()}, 
     {app: coffeeOutside, dwell: 5},
     {app: trashday, dwell: 5}
     

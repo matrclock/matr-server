@@ -10,7 +10,7 @@ dayjs.extend(advancedFormat);
 
 const tz = "America/Denver";
 
-export function time(delay) {
+export function time(delay = 5) {
   return async () => {
     const now = dayjs.utc().tz(tz);
 
