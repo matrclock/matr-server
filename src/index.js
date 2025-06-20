@@ -20,25 +20,33 @@ import { todoist } from './sources/todoist.js';
 import { daysUntil } from './sources/daysuntil.js';
 
 
-const apps = [
+const pickRandom = arr => arr[Math.floor(Math.random() * arr.length)];
+const sometimesApps = [
+    {app: pixlet('sunrise_sunset'), dwell: 5}, 
+    {app: coffeeOutside, dwell: 5},
+    {app: trashday, dwell: 5},
     {app: daysUntil({
         date: '2025-07-09',
         text: 'France',
         icon: 'ʟ',
     }), dwell: 5},
-    {app: time()}, 
     {app: todoist(0,4)},
-    {app: time()},     
-    {app: pixlet('sunrise_sunset'), dwell: 5}, 
-    {app: time()}, 
-    {app: currentWeather},
-    {app: time()}, 
-    {app: weather}, 
-    {app: time()}, 
-    {app: coffeeOutside, dwell: 5},
-    {app: trashday, dwell: 5}
-    
+
 ];
+
+function getApps() {
+    return [
+        {app: time()}, 
+        pickRandom(sometimesApps),
+        {app: time()}, 
+        {app: currentWeather},
+        {app: time()}, 
+        {app: weather},  
+    ];
+}
+
+
+
 
 
 dayjs.extend(utc);
@@ -98,6 +106,7 @@ function getResponseMethod(dataFn, contentType) {
 }
 
 async function findApp(session, counter = 0) {
+    const apps = getApps();
     const index = session.requestCount % apps.length;
     const app = await apps[index].app();
     const dwell = apps[index].dwell;

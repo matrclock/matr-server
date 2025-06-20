@@ -84,11 +84,11 @@ export function todoist(start = 0, stop = 4) {
       const taskSlice = combined.slice(start, stop);
 
       const speeds = [1, Math.sqrt(2), Math.E - 1, Math.PI / 2].sort(() => Math.random() - 0.5);
-      const colors = ['#ccc', '#666', '#333', '#999'].sort(() => Math.random() - 0.5);
+      const colors = ['#ccc', '#999', '#666', '#333'];
 
       const textItems = taskSlice.map((task, idx) => {
         return new TextContent({
-          content: `${idx + 1}. ${task.rendered}`,
+          content: `${task.rendered}`,
           fontName: "Tiny5-Regular",
           x: 0,
           y: idx * 8,
